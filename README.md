@@ -4,7 +4,7 @@ English | [中文](README.zh.md)
 
 **Client Front UI (界面美化)** — A unified DSH Web extension consolidating Font Controller, Workspace Extended, and Plugin Rail into a single bundle.
 
-[![version](https://img.shields.io/badge/version-0.3.0-blue.svg)](#changelog)
+[![version](https://img.shields.io/badge/version-0.3.1-blue.svg)](#changelog)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#compatibility--architecture)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#compatibility--architecture)
 
@@ -69,14 +69,14 @@ The repository root serves directly as the plugin package root (containing `pack
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # Or specify a version
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.0
+dsh plugin --profile desktop add dsh-client-front-ui@0.3.1
 ```
 
 ### Option 2: Install from GitHub
 
 ```bash
-# Replace <owner> with the repository owner's GitHub username
-dsh plugin --profile desktop add git+https://github.com/<owner>/dsh-client-front-ui.git
+# Repository owner: QinzYee
+dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front-ui.git
 ```
 
 ### Option 3: Install from a Local Directory or `.tgz` Archive
@@ -86,7 +86,7 @@ dsh plugin --profile desktop add git+https://github.com/<owner>/dsh-client-front
 dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui
 
 # From a packaged .tgz tarball
-dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.0.tgz
+dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.1.tgz
 ```
 
 > **GUI Installation**: You can also navigate to **Plugins → Add Plugin** in DSH Web and enter the npm package name, Git repository URL, `.tgz` path, or local directory path directly (on Windows, paths like `F:\plugins\client-front-ui` work out of the box).
@@ -160,6 +160,12 @@ A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementin
 
 ## Changelog
 
+### 0.3.1
+
+* **License**: added the MIT `LICENSE` file and the `license` field in `package.json`.
+* **Documentation**: added the bilingual README set and the repository/homepage metadata.
+* No runtime changes; this release only ships package metadata and documentation updates.
+
 ### 0.3.0
 
 * **Unified Bundle**: Consolidated `font-controller`, `dsh-plugin-sidebar`, and `dsh-session-sidebar-extended` into a single plugin and Loader entry.
@@ -171,4 +177,6 @@ A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementin
 
 ## License
 
-No license has been specified for this package yet. Please add a `LICENSE` file and declare the appropriate license field in `package.json` (e.g., `MIT`) prior to public distribution.
+This package is released under the [MIT License](LICENSE).
+
+Copyright (c) 2026 QinzYee.

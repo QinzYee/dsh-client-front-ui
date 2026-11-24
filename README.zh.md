@@ -4,7 +4,7 @@
 
 **界面美化（Client Front UI）** —— 将字体控制、工作区拓展与插件边栏整合为单一 DSH Web 扩展插件。
 
-[![version](https://img.shields.io/badge/version-0.3.0-blue.svg)](#更新日志)
+[![version](https://img.shields.io/badge/version-0.3.1-blue.svg)](#更新日志)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#兼容性与技术实现)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#兼容性与技术实现)
 
@@ -77,14 +77,14 @@
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # 或指定版本
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.0
+dsh plugin --profile desktop add dsh-client-front-ui@0.3.1
 ```
 
 ### 方式二：通过 GitHub 仓库安装
 
 ```bash
-# 请将 <owner> 替换为实际仓库所有者
-dsh plugin --profile desktop add git+https://github.com/<owner>/dsh-client-front-ui.git
+# 仓库所有者：QinzYee
+dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front-ui.git
 ```
 
 ### 方式三：从本地目录或 `.tgz` 包安装
@@ -94,7 +94,7 @@ dsh plugin --profile desktop add git+https://github.com/<owner>/dsh-client-front
 dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui
 
 # 从打包好的 tgz 归档安装
-dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.0.tgz
+dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.1.tgz
 ```
 
 > **图形界面安装**：你也可以在 DSH Web 中前往 **插件 → 添加插件**，直接输入 npm 包名、Git 仓库 URL、`.tgz` 路径或本地文件夹绝对路径（Windows 下可直接填写如 `F:\plugins\client-front-ui`）。
@@ -182,6 +182,12 @@ A：官方的 `sidebar.workspaces` 属于单占位插槽（Single-slot）。为�
 
 ## 更新日志
 
+### 0.3.1
+
+- **许可证**：新增 MIT `LICENSE` 文件，并在 `package.json` 中声明 `license` 字段。
+- **文档**：补充中英文 README，以及仓库地址和主页元数据。
+- 无运行时改动；本版本只更新包元数据和文档。
+
 ### 0.3.0
 
 - **架构合并**：将原 `font-controller`、`dsh-plugin-sidebar`、`dsh-session-sidebar-extended` 合并为单一插件包与单一 Loader 行。
@@ -195,4 +201,6 @@ A：官方的 `sidebar.workspaces` 属于单占位插槽（Single-slot）。为�
 
 ## 许可证
 
-当前仓库尚未指定开源许可证。在公开发布至 npm 或开源社区前，请补充 `LICENSE` 文件并在 `package.json` 中声明对应协议（如 `MIT`）。
+本项目采用 [MIT 许可证](LICENSE)。
+
+Copyright (c) 2026 QinzYee.
