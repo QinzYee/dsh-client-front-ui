@@ -1,8 +1,8 @@
 {
   "name": "dsh-client-front-ui",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "type": "module",
-  "description": "Client Front UI (客户端界面拓展): three interface modules for the DSH Web GUI — fonts, workspace sidebar and plugin rail — with independent switches and collapsible panels.",
+  "description": "Client Front UI (客户端界面拓展): four interface modules for the DSH Web GUI — fonts, workspace sidebar, plugin rail and other UI polish — with independent switches and collapsible panels.",
   "license": "MIT",
   "repository": {
     "type": "git",

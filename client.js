@@ -4352,18 +4352,20 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
     const PANEL_ID = 'client-front-ui'
     const OPEN_KEY = 'cfui.modules.v1'
     const ENABLED_KEY = 'cfui.modules.enabled.v1'
-    const ENABLED_DEFAULTS = { font: true, sidebar: true, rail: true }
+    const ENABLED_DEFAULTS = { font: true, sidebar: true, rail: true, other: true, otherAnchor: true }
 
     const zh = {
       'panel': '客户端界面拓展',
       'title': '客户端界面拓展',
-      'intro': '字体、插件边栏与工作区拓展集中在这里；每个模块都可以收起或展开。',
+      'intro': '字体、工作区、插件边栏与其他 UI 组件优化集中在这里；每个模块都可以收起或展开。',
       'module.font.title': '字体控制',
       'module.font.desc': '为界面、代码与终端分别配置中文和西文字体，支持关键字搜索与一键恢复默认。',
       'module.sidebar.title': '工作区拓展',
       'module.sidebar.desc': '将会话侧栏（工作区区域）重构为「最近 / 工作区 / 聊天」三段式结构，让多项目/对话管理更高效。',
       'module.rail.title': '插件边栏',
       'module.rail.desc': '收纳工作区的插件 / 自动化功能 / dshLogo 等入口至左侧边栏，释放工作区更多垂直空间',
+      'module.other.title': '其他 UI 组件优化',
+      'other.anchor.title': '对话轮次导航条美化',
       'module.expand': '展开',
       'module.collapse': '收起',
       'module.enabled': '已启用',
@@ -4377,13 +4379,15 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
     const en = {
       'panel': 'Client Front UI',
       'title': 'Client Front UI',
-      'intro': 'Fonts, the plugin rail and the workspace extension in one place. Each module collapses and expands.',
+      'intro': 'Fonts, workspace, plugin rail and other UI polish in one place. Each module collapses and expands.',
       'module.font.title': 'Fonts',
       'module.font.desc': 'Pick Chinese and Latin typefaces for the interface, code, and terminal, with keyword search and one-click reset.',
       'module.sidebar.title': 'Workspace extension',
       'module.sidebar.desc': 'Rebuilds the session sidebar (the workspace area) into Recent / Workspaces / Chats, so many projects and conversations are easier to manage.',
       'module.rail.title': 'Plugin rail',
       'module.rail.desc': 'Tucks the plugin, automation and DSH logo entries into the left rail, freeing up vertical space in the workspace',
+      'module.other.title': 'Other UI enhancements',
+      'other.anchor.title': 'Turn navigation polish',
       'module.expand': 'Expand',
       'module.collapse': 'Collapse',
       'module.enabled': 'Enabled',
@@ -4417,10 +4421,10 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .cfui-mod.is-open .cfui-chev svg{transform:rotate(180deg)}
 .cfui-mod-switch{flex:none;position:relative;display:inline-flex;align-items:center;width:34px;height:20px;cursor:pointer}
 .cfui-mod-switch input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-.cfui-switch-track{position:relative;display:block;width:34px;height:20px;border-radius:10px;background:var(--dsw-alias-interactive-bg-active,rgba(0,0,0,.18));transition:background .15s ease}
-.cfui-switch-track::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s ease}
-.cfui-mod-switch input:checked + .cfui-switch-track{background:var(--dsw-alias-brand-primary,#2f6bff)}
-.cfui-mod-switch input:checked + .cfui-switch-track::after{transform:translateX(14px)}
+.cfui-switch-track{position:relative;display:block;width:34px;height:20px;border-radius:10px;background:var(--dsw-alias-interactive-bg-active,rgba(127,127,127,.28));box-shadow:inset 0 0 0 1px var(--dsw-alias-border-l3,rgba(127,127,127,.35));transition:background .15s ease,box-shadow .15s ease}
+.cfui-switch-track::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--dsw-alias-label-primary,#1f2329);box-shadow:0 1px 2px rgba(0,0,0,.3),0 0 0 .5px rgba(0,0,0,.08);transition:transform .15s ease,background .15s ease}
+.cfui-mod-switch input:checked + .cfui-switch-track{background:var(--dsw-alias-brand-primary,#2f6bff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--dsw-alias-label-primary-foreground,#fff) 18%,transparent)}
+.cfui-mod-switch input:checked + .cfui-switch-track::after{background:var(--dsw-alias-label-primary-foreground,#fff);transform:translateX(14px)}
 .cfui-mod-switch input:focus-visible + .cfui-switch-track{box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary,#2f6bff) 25%,transparent)}
 .cfui-mod-body{padding:16px 18px 18px;border-top:.5px solid var(--dsw-alias-border-l1,rgba(0,0,0,.08))}
 /* The session-sidebar settings keep their component, but render as the same
@@ -4428,6 +4432,8 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .cfui-mod-body .dswb-group{gap:0}
 .cfui-settings-head{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border:.5px solid var(--dsw-alias-border-l2,rgba(0,0,0,.12));border-bottom:0;border-radius:12px 12px 0 0;background:var(--dsw-alias-bg-layer-2,#f5f6f8);color:var(--dsw-alias-label-secondary,#61666d);font-size:12px;line-height:18px}
 .cfui-settings-head + .dswb-group .dswb-cards{border-radius:0 0 12px 12px}
+.cfui-feature-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border:.5px solid var(--dsw-alias-border-l2,rgba(0,0,0,.12));border-top:0;border-radius:0 0 12px 12px;background:var(--dsw-alias-bg-layer-1,#fff)}
+.cfui-feature-name{min-width:0;font-size:14px;font-weight:500;line-height:20px}
 .cfui-mod-body .dswb-group-title{display:none}
 .cfui-mod-body .dswb-cards{gap:0;border:.5px solid var(--dsw-alias-border-l2,rgba(0,0,0,.12));border-radius:12px;overflow:hidden;background:var(--dsw-alias-bg-layer-1,#fff)}
 .cfui-mod-body .dswb-card{margin:0;border-radius:0;border-bottom:.5px solid var(--dsw-alias-border-l1,rgba(0,0,0,.08));background:transparent}
@@ -4435,10 +4441,10 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .cfui-mod-body .dswb-card.is-switch:hover{background:color-mix(in srgb,var(--dsw-alias-label-primary,#1f2329) 4%,transparent)}
 .cfui-mod-body .dswb-card.is-switch .dswb-card-head{display:flex;flex-direction:row-reverse;align-items:center;gap:16px;width:100%;box-sizing:border-box;padding:14px 18px}
 .cfui-mod-body .dswb-card-title{flex:1;min-width:0;font-size:14px;font-weight:500;line-height:20px}
-.cfui-mod-body .dswb-switch{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:34px;height:20px;margin:0;border:0;border-radius:10px;background:var(--dsw-alias-interactive-bg-active,rgba(0,0,0,.18));cursor:pointer;transition:background .15s ease}
-.cfui-mod-body .dswb-switch::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s ease}
-.cfui-mod-body .dswb-switch:checked{background:var(--dsw-alias-brand-primary,#2f6bff)}
-.cfui-mod-body .dswb-switch:checked::after{transform:translateX(14px)}
+.cfui-mod-body .dswb-switch{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:34px;height:20px;margin:0;border:0;border-radius:10px;background:var(--dsw-alias-interactive-bg-active,rgba(127,127,127,.28));box-shadow:inset 0 0 0 1px var(--dsw-alias-border-l3,rgba(127,127,127,.35));cursor:pointer;transition:background .15s ease,box-shadow .15s ease}
+.cfui-mod-body .dswb-switch::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--dsw-alias-label-primary,#1f2329);box-shadow:0 1px 2px rgba(0,0,0,.3),0 0 0 .5px rgba(0,0,0,.08);transition:transform .15s ease,background .15s ease}
+.cfui-mod-body .dswb-switch:checked{background:var(--dsw-alias-brand-primary,#2f6bff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--dsw-alias-label-primary-foreground,#fff) 18%,transparent)}
+.cfui-mod-body .dswb-switch:checked::after{background:var(--dsw-alias-label-primary-foreground,#fff);transform:translateX(14px)}
 .cfui-mod-body .dswb-switch:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-brand-primary,#2f6bff) 25%,transparent)}
 .cfui-log{border-top:.5px solid var(--dsw-alias-border-l1,rgba(0,0,0,.08));padding-top:12px;display:flex;flex-direction:column}
 .cfui-log-toggle{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:8px 10px;margin:0 -10px;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
@@ -4461,6 +4467,16 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 `
 
     const CHANGELOG = [
+      {
+        time: '2026-11-25 15:47',
+        title: '0.4.0——2026-11-25 15:47',
+        lines: [
+          '新增「其他 UI 组件优化」模块',
+          '对话轮次导航：锚点条等长，悬停时按距离形成曲线',
+          '模块内增加「对话轮次导航条美化」开关',
+          '模块开关适配深色 / 浅色主题',
+        ],
+      },
       {
         time: '2026-11-25 11:48',
         title: '0.3.3——2026-11-25 11:48',
@@ -4489,7 +4505,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       },
     ]
 
-    const OPEN_DEFAULTS = { font: true, sidebar: true, rail: true, log: false }
+    const OPEN_DEFAULTS = { font: true, sidebar: true, rail: true, other: true, log: false }
 
     function readOpenMap() {
       const fallback = { ...OPEN_DEFAULTS }
@@ -4665,7 +4681,253 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       h('path', { key: 'cord', d: 'M16.2 15.6v2.2' }),
     )
 
+    /** A small component grid with one accent tile: the "other" bucket. */
+    const ICON_OTHER = h('svg', {
+      width: 19, height: 19, viewBox: '0 0 24 24', fill: 'none',
+      stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': 'true',
+    },
+      h('rect', { key: 'a', x: 3.4, y: 3.4, width: 7, height: 7, rx: 2 }),
+      h('rect', { key: 'b', x: 13.6, y: 3.4, width: 7, height: 7, rx: 2 }),
+      h('rect', { key: 'c', x: 3.4, y: 13.6, width: 7, height: 7, rx: 2 }),
+      h('path', { key: 'd', d: 'M17.1 14.4v5' }),
+      h('path', { key: 'e', d: 'M14.6 16.9h5' }),
+    )
+
     //#endregion
+
+    // ---------------------------------------------------------- turn navigation polish
+
+    const TURN_RAIL_ATTR = 'data-cfui-turn-rail'
+    const TURN_RAIL_STYLE_ATTR = 'data-cfui-turn-rail-style'
+
+    const TURN_RAIL_CSS = `
+[${TURN_RAIL_ATTR}] button[data-index]::before{
+  transform:translateY(-50%) scaleX(var(--cfui-turn-scale,.45)) !important;
+  transform-origin:100% 50%;
+  transition:transform 200ms cubic-bezier(.22,1.6,.36,1),background-color .14s;
+  will-change:transform;
+}
+@media (prefers-reduced-motion:reduce){
+  [${TURN_RAIL_ATTR}] button[data-index]::before{transition:none}
+}
+`
+
+    /**
+     * Turn navigation is an official Chat component. This module only observes
+     * its DOM: it adds one temporary attribute to the nav, one style tag, and
+     * per-mark CSS variables. Removing them restores the official component.
+     */
+    function createTurnRailPolish() {
+      const doc = typeof document === 'undefined' ? null : document
+      const BASE = 0.45
+      const PEAK = 1.3
+      const SIGMA = 1.9
+      let enabled = false
+      let nav = null
+      let observer = null
+      let frame = 0
+      let style = null
+      let lastIndex = -1
+      let lastCount = 0
+
+      const raf = (fn) => {
+        if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+          return window.requestAnimationFrame(fn)
+        }
+        return typeof window !== 'undefined' ? window.setTimeout(fn, 16) : 0
+      }
+      const caf = (id) => {
+        if (!id) return
+        if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
+          window.cancelAnimationFrame(id)
+        } else if (typeof window !== 'undefined') {
+          window.clearTimeout(id)
+        }
+      }
+
+      function ensureStyle() {
+        if (!doc || !doc.head) return
+        if (style && style.isConnected) return
+        style = doc.createElement('style')
+        style.setAttribute(TURN_RAIL_STYLE_ATTR, '')
+        style.textContent = TURN_RAIL_CSS
+        doc.head.appendChild(style)
+      }
+
+      function marksOf(node) {
+        if (!node || typeof node.querySelectorAll !== 'function') return []
+        return Array.from(node.querySelectorAll('button[data-index]'))
+      }
+
+      function clearMarks(node) {
+        for (const mark of marksOf(node)) mark.style.removeProperty('--cfui-turn-scale')
+      }
+
+      function findNav() {
+        if (!doc || typeof doc.querySelectorAll !== 'function') return null
+        const candidates = []
+        for (const node of doc.querySelectorAll('nav')) {
+          const buttons = Array.from(node.querySelectorAll('button[data-index]'))
+          if (buttons.length === 0) continue
+          let turnRail = false
+          for (const button of buttons) {
+            if (button.hasAttribute('aria-describedby')) {
+              turnRail = true
+              break
+            }
+            if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') continue
+            const computed = window.getComputedStyle(button)
+            const height = parseFloat(computed.height)
+            if (computed.position === 'absolute' && Number.isFinite(height) && height <= 12) {
+              turnRail = true
+              break
+            }
+          }
+          if (turnRail) candidates.push(node)
+        }
+        if (candidates.length === 0) return null
+        for (const node of candidates) {
+          if (typeof node.getBoundingClientRect !== 'function') continue
+          const rect = node.getBoundingClientRect()
+          if (rect.width > 0 && rect.height > 0) return node
+        }
+        return candidates[0]
+      }
+
+      function onPointerMove(event) {
+        if (!enabled || !nav) return
+        const marks = marksOf(nav)
+        if (marks.length === 0) return
+        let index = -1
+        const target = event.target && typeof event.target.closest === 'function'
+          ? event.target.closest('button[data-index]')
+          : null
+        if (target && nav.contains(target)) index = marks.indexOf(target)
+        if (index < 0) {
+          let nearest = Infinity
+          for (let i = 0; i < marks.length; i++) {
+            const rect = marks[i].getBoundingClientRect()
+            const distance = Math.abs(event.clientY - (rect.top + rect.height / 2))
+            if (distance < nearest) {
+              nearest = distance
+              index = i
+            }
+          }
+        }
+        if (index < 0) return
+        if (index === lastIndex && marks.length === lastCount) return
+        lastIndex = index
+        lastCount = marks.length
+        for (let i = 0; i < marks.length; i++) {
+          const distance = Math.abs(i - index)
+          const weight = Math.exp(-(distance * distance) / (2 * SIGMA * SIGMA))
+          marks[i].style.setProperty('--cfui-turn-scale', (BASE + (PEAK - BASE) * weight).toFixed(3))
+        }
+      }
+
+      function onPointerLeave() {
+        if (!nav) return
+        clearMarks(nav)
+        lastIndex = -1
+        lastCount = 0
+      }
+
+      function attach() {
+        if (!nav) return
+        nav.addEventListener('pointermove', onPointerMove, { passive: true })
+        nav.addEventListener('pointerleave', onPointerLeave, { passive: true })
+      }
+
+      function detach() {
+        if (!nav) return
+        nav.removeEventListener('pointermove', onPointerMove)
+        nav.removeEventListener('pointerleave', onPointerLeave)
+      }
+
+      function sync() {
+        if (!enabled || !doc) return
+        const next = findNav()
+        if (next !== nav) {
+          detach()
+          if (nav) {
+            nav.removeAttribute(TURN_RAIL_ATTR)
+            clearMarks(nav)
+          }
+          nav = next
+          lastIndex = -1
+          lastCount = 0
+          if (nav) {
+            ensureStyle()
+            nav.setAttribute(TURN_RAIL_ATTR, 'on')
+            attach()
+          }
+          return
+        }
+        if (nav) {
+          ensureStyle()
+          if (!nav.hasAttribute(TURN_RAIL_ATTR)) nav.setAttribute(TURN_RAIL_ATTR, 'on')
+        }
+      }
+
+      function schedule() {
+        if (!enabled || frame) return
+        frame = raf(() => {
+          frame = 0
+          sync()
+        })
+      }
+
+      function start() {
+        if (enabled || !doc) return
+        enabled = true
+        ensureStyle()
+        sync()
+        if (typeof MutationObserver !== 'undefined' && doc.documentElement) {
+          observer = new MutationObserver(() => {
+            lastIndex = -1
+            lastCount = 0
+            schedule()
+          })
+          observer.observe(doc.documentElement, { childList: true, subtree: true })
+        }
+      }
+
+      function stop() {
+        enabled = false
+        caf(frame)
+        frame = 0
+        if (observer) {
+          observer.disconnect()
+          observer = null
+        }
+        detach()
+        if (nav) {
+          nav.removeAttribute(TURN_RAIL_ATTR)
+          clearMarks(nav)
+          nav = null
+        }
+        if (doc && typeof doc.querySelectorAll === 'function') {
+          for (const node of doc.querySelectorAll('[' + TURN_RAIL_ATTR + ']')) {
+            node.removeAttribute(TURN_RAIL_ATTR)
+            clearMarks(node)
+          }
+          for (const node of doc.querySelectorAll('style[' + TURN_RAIL_STYLE_ATTR + ']')) node.remove()
+        }
+        style = null
+        lastIndex = -1
+        lastCount = 0
+      }
+
+      return {
+        setEnabled(value) {
+          if (value) start()
+          else stop()
+        },
+        dispose() {
+          stop()
+        },
+      }
+    }
 
     function Module(props) {
       const { id, icon, title, desc, open, enabled, onToggle, onEnabled, children } = props
@@ -4682,7 +4944,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
             h('span', { className: 'cfui-mod-icon', 'aria-hidden': 'true' }, icon),
             h('span', { className: 'cfui-mod-text' },
               h('span', { className: 'cfui-mod-title' }, title),
-              h('span', { className: 'cfui-mod-desc' }, desc),
+              desc ? h('span', { className: 'cfui-mod-desc' }, desc) : null,
             ),
           ),
           h('label', {
@@ -4768,6 +5030,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       const railModule = createRailModule(require)
       const sidebarModule = createSidebarModule(require)
       const fontModule = createFontModule(require)
+      const turnRail = createTurnRailPolish()
 
       const gates = { rail: [], sidebar: [] }
       let gating = false
@@ -4821,10 +5084,12 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
         const state = readEnabledSnapshot()
         syncGate('rail', state.rail !== false)
         syncGate('sidebar', state.sidebar !== false)
+        turnRail.setEnabled(state.other !== false && state.otherAnchor !== false)
       }
 
       syncGates()
       ctx.effect(() => subscribeEnabled(syncGates), 'client-front-ui: module switches')
+      ctx.effect(() => () => turnRail.dispose(), 'client-front-ui: other UI cleanup')
 
       const FontPanel = fontModule.createPanel(ctx, fontT)
       const ResetAndDisable = fontModule.createResetAndDisable(ctx, fontT, PACKAGE)
@@ -4872,6 +5137,36 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
             onToggle: () => props.toggle('rail'),
             onEnabled: (value) => setModuleEnabled('rail', value),
           }),
+          h(Module, {
+            id: 'other',
+            t,
+            icon: ICON_OTHER,
+            title: t('module.other.title'),
+            open: props.open.other,
+            enabled: enabled.other !== false,
+            onToggle: () => props.toggle('other'),
+            onEnabled: (value) => setModuleEnabled('other', value),
+          }, h('div', { className: 'cfui-settings' },
+            h('div', { className: 'cfui-settings-head' },
+              h('span', null, t('settings.feature')),
+              h('span', null, t('settings.state')),
+            ),
+            h('div', { className: 'cfui-feature-row' },
+              h('span', { className: 'cfui-feature-name' }, t('other.anchor.title')),
+              h('label', {
+                className: 'cfui-mod-switch cfui-feature-switch',
+                title: t('other.anchor.title') + ' · ' + (enabled.otherAnchor !== false ? t('module.enabled') : t('module.disabled')),
+              },
+                h('input', {
+                  type: 'checkbox',
+                  checked: enabled.otherAnchor !== false,
+                  'aria-label': t('other.anchor.title') + ' · ' + (enabled.otherAnchor !== false ? t('module.enabled') : t('module.disabled')),
+                  onChange: (event) => setModuleEnabled('otherAnchor', event.target.checked),
+                }),
+                h('span', { className: 'cfui-switch-track', 'aria-hidden': 'true' }),
+              ),
+            ),
+          )),
         )
       }
 

@@ -2,15 +2,15 @@
 
 English | [中文](README.zh.md)
 
-**Client Front UI (客户端界面拓展)** — A DSH Web extension with three interface modules: Font Controller, Workspace Extended, and Plugin Rail.
+**Client Front UI (客户端界面拓展)** — A DSH Web extension with four interface modules: Font Controller, Workspace Extended, Plugin Rail, and Other UI Enhancements.
 
-[![version](https://img.shields.io/badge/version-0.3.3-blue.svg)](#changelog)
+[![version](https://img.shields.io/badge/version-0.4.0-blue.svg)](#changelog)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#compatibility--architecture)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#compatibility--architecture)
 
 ## Overview
 
-`dsh-client-front-ui` is a single DSH Web extension with three independently switchable modules: **Font Controller**, **Workspace Extended**, and **Plugin Rail**. It appears as one card on the Plugins page and adds one entry to the left icon rail; that entry opens a centralized configuration view where each module can be toggled and collapsed.
+`dsh-client-front-ui` is a single DSH Web extension with four independently switchable modules: **Font Controller**, **Workspace Extended**, **Plugin Rail**, and **Other UI Enhancements**. It appears as one card on the Plugins page and adds one entry to the left icon rail; that entry opens a centralized configuration view where each module can be toggled and collapsed.
 
 * **Package Name**: `dsh-client-front-ui`
 * **Loader Key**: `client-front-ui`
@@ -59,6 +59,14 @@ Consolidates global sidebar entries into a slim vertical icon rail on the far le
 * **Streamlined Layout**: Hides the top brand row and moves **New session** to the top row; clicking the brand whale icon returns to the conversation (revealing a home icon on hover), while the account entry stays anchored at the bottom.
 * **Scoped Styling**: All rail styles are scoped under `html[data-client-front-ui='on']`. Disabling the module or plugin removes the attribute and reverts to the official layout. This module requires no additional settings beyond its enable switch.
 
+### 4. Other UI Enhancements
+
+Outer-layer polish for the official DSH UI. It does not modify DSH components; disabling the module or plugin restores the original UI.
+
+* **Turn navigation**: rail marks are equal length and colour at rest, with only the official active mark highlighted. On hover, the pointed mark grows and neighbouring marks fall off by distance in a bell-like curve, with a springy transition.
+* **Per-feature switch**: the module can stay on while the turn navigation polish is toggled independently.
+* **Non-invasive**: adds one temporary attribute to the official nav, one scoped stylesheet and per-mark CSS variables; disabling removes them and leaves the official React components untouched.
+
 ## Installation
 
 The repository root serves directly as the plugin package root (containing `package.json`, `cordis.patch.yml`, and the prebuilt `client.js`). End users do not need Node.js or pnpm installed locally; the DSH Host uses its bundled pnpm automatically.
@@ -68,7 +76,7 @@ The repository root serves directly as the plugin package root (containing `pack
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # Or specify a version
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.3
+dsh plugin --profile desktop add dsh-client-front-ui@0.4.0
 ```
 
 ### Option 2: Install from GitHub
@@ -85,7 +93,7 @@ dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front
 dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui
 
 # From a packaged .tgz tarball
-dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.3.tgz
+dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.4.0.tgz
 ```
 
 > **GUI Installation**: You can also navigate to **Plugins → Add Plugin** in DSH Web and enter the npm package name, Git repository URL, `.tgz` path, or local directory path directly (on Windows, paths like `F:\plugins\client-front-ui` work out of the box).
@@ -104,7 +112,7 @@ dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.
 | --- | --- |
 | **Plugins Page** | One card: **Client Front UI** |
 | **Left Icon Rail** | Adds a sliders configuration button (official "Plugins" and "Scheduled tasks" entries remain intact) |
-| **Configuration View** | Both the rail entry and the plugin details page render the exact same three-module settings panel |
+| **Configuration View** | Both the rail entry and the plugin details page render the exact same four-module settings panel |
 
 ## Settings & Persistence
 
@@ -124,13 +132,13 @@ All plugin states are stored locally in your browser or within your active DSH p
 * **Compatibility**: Verified on DSH Web `0.2.1-rc.2` (`desktop` profile).
 * **Peer Dependencies**: Relies on host-provided `@deepseek-ai/dsh-client-ui-theme`, `ui-layout`, and `ui-sidebar` client packages without bundling duplicates.
 * **Implementation Details**:
-  * Single bundle and single Loader entry (`client-front-ui`) applying `createFontModule`, `createSidebarModule`, and `createRailModule` together.
+  * Single bundle and single Loader entry (`client-front-ui`) applying `createFontModule`, `createSidebarModule` and `createRailModule`, plus a non-invasive turn-navigation polish layer.
   * Page-level slots (`main`, `sidebar.panellist`, `plugins.bundle.config`) and detail actions are registered only once.
   * Ships with a prebuilt `client.js` committed to the repository for direct Git and npm distribution.
 
 ## Known Limitations
 
-* **Plugin-Level Toggle**: Disabling **Client Front UI** on the Plugins page disables all three modules simultaneously. Use individual module switches to disable specific features.
+* **Plugin-Level Toggle**: Disabling **Client Front UI** on the Plugins page disables all four modules simultaneously. Use individual module switches to disable specific features.
 * **Font Module Switch Behavior**: Turning off the Font Controller switch only hides its UI panel and does not reset fonts already saved in `ui-theme`. Use the module's reset buttons to revert fonts.
 * **Installed Font Detection**: Detection relies on canvas text-width heuristics; if a local font is registered under a different system name, it may be flagged as uninstalled even though it can still be selected.
 * **Host DOM Coupling**: Workspace overrides and rail styles depend on official slot anchors (`data-slot`) and shell overlay structures (`shell.overlay`). Future DSH UI updates may require selector adjustments.
@@ -148,6 +156,13 @@ A: Yes. Simply toggle off **Workspace Extended** and **Plugin Rail** in the sett
 A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementing the **Recent / Workspaces / Chats** layout requires taking over the slot at a lower priority (`priority: -1`). Disabling the module releases the override and restores the official sidebar automatically.
 
 ## Changelog
+
+### 0.4.0——2026-11-25 15:47
+
+* Added the **Other UI Enhancements** module.
+* **Turn navigation**: equal-length marks at rest; on hover, marks grow in a distance-weighted curve.
+* Added a per-feature “Turn navigation polish” switch inside the module.
+* Made the module switches legible in both light and dark themes.
 
 ### 0.3.3——2026-11-25 11:48
 

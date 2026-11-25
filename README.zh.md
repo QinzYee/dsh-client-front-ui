@@ -2,9 +2,9 @@
 
 [English](README.md) | 中文
 
-**客户端界面拓展（Client Front UI）** —— 一个包含字体控制、工作区拓展与插件边栏三个模块的 DSH Web 扩展插件。
+**客户端界面拓展（Client Front UI）** —— 一个包含字体控制、工作区拓展、插件边栏与其他 UI 组件优化四个模块的 DSH Web 扩展插件。
 
-[![version](https://img.shields.io/badge/version-0.3.3-blue.svg)](#更新日志)
+[![version](https://img.shields.io/badge/version-0.4.0-blue.svg)](#更新日志)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#兼容性与技术实现)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#兼容性与技术实现)
 
@@ -12,7 +12,7 @@
 
 ## 简介
 
-`dsh-client-front-ui` 是一个 DSH Web 扩展插件，内含**字体控制**、**工作区拓展**与**插件边栏**三个可独立开关的模块。安装后，插件列表只保留一张卡片，左侧图标栏只新增一个统一入口；点击即可在单个配置页中独立启停、折叠管理三个模块。
+`dsh-client-front-ui` 是一个 DSH Web 扩展插件，内含**字体控制**、**工作区拓展**、**插件边栏**与**其他 UI 组件优化**四个可独立开关的模块。安装后，插件列表只保留一张卡片，左侧图标栏只新增一个统一入口；点击即可在单个配置页中独立启停、折叠管理四个模块。
 
 - **包名**：`dsh-client-front-ui`
 - **Loader 标识**：`client-front-ui`
@@ -65,6 +65,14 @@
 - **布局优化**：隐藏原顶部品牌行，将 **新会话** 按钮上移至首行；点击品牌鲸鱼图标返回会话（悬停显示首页图标），账户入口固定于图标栏底部。
 - **样式隔离**：所有样式规则均挂载于 `html[data-client-front-ui='on']` 选择器下，停用后自动移除属性并还原官方布局。该模块无需额外参数配置，仅提供启用开关。
 
+### 4. 其他 UI 组件优化
+
+在不改动 DSH 官方组件的前提下，对官方界面做外层增强；停用模块或插件后恢复原样。
+
+- **对话轮次导航**：锚点条常态等长、同色，仅保留官方当前锚点高亮；鼠标移入时，指向的锚点条变长，邻近锚点条按距离衰减，形成类似正态分布的曲线，并带弹性过渡。
+- **功能级开关**：模块可以保持开启，单独关闭「对话轮次导航条美化」。
+- **非侵入**：只给官方导航加一个临时属性、一份作用域样式和每个锚点的 CSS 变量；停用时全部移除，不修改官方 React 组件。
+
 ---
 
 ## 安装
@@ -76,7 +84,7 @@
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # 或指定版本
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.3
+dsh plugin --profile desktop add dsh-client-front-ui@0.4.0
 ```
 
 ### 方式二：通过 GitHub 仓库安装
@@ -93,7 +101,7 @@ dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front
 dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui
 
 # 从打包好的 tgz 归档安装
-dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.3.tgz
+dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.4.0.tgz
 ```
 
 > **图形界面安装**：你也可以在 DSH Web 中前往 **插件 → 添加插件**，直接输入 npm 包名、Git 仓库 URL、`.tgz` 路径或本地文件夹绝对路径（Windows 下可直接填写如 `F:\plugins\client-front-ui`）。
@@ -114,7 +122,7 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.3.tg
 | --- | --- |
 | **插件管理页** | 只有一张卡片：**客户端界面拓展** |
 | **左侧图标栏** | 新增滑杆配置入口（保留官方「插件」「自动化任务」入口） |
-| **配置详情页** | 左侧图标栏入口与插件详情页共享同一套三模块配置界面 |
+| **配置详情页** | 左侧图标栏入口与插件详情页共享同一套四模块配置界面 |
 
 ---
 
@@ -138,7 +146,7 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.3.tg
 - **版本兼容**：已在 DSH Web `0.2.1-rc.2`（`desktop` profile）完整测试通过。
 - **外部依赖**：依赖宿主环境提供的 `@deepseek-ai/dsh-client-ui-theme`、`ui-layout` 与 `ui-sidebar`，构建产物中未重复打包这些依赖。
 - **架构设计**：
-  - 采用单一 Bundle 与单一 Loader 行（`client-front-ui`），内部由 `createFontModule`、`createSidebarModule`、`createRailModule` 三个独立工厂模块统一挂载。
+  - 采用单一 Bundle 与单一 Loader 行（`client-front-ui`），内部由 `createFontModule`、`createSidebarModule`、`createRailModule` 三个工厂模块，以及一个不侵入官方 DOM 的轮次导航增强层组成。
   - 全局页面级插槽（`main`、`sidebar.panellist`、`plugins.bundle.config`）仅注册一次，避免重复挂载开销。
   - 仓库内直接包含预构建的 `client.js`，确保可直接通过 Git 或 npm 分发安装。
 
@@ -146,7 +154,7 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.3.tg
 
 ## 已知限制
 
-- **整体启停粒度**：在 DSH 插件页停用 `客户端界面拓展` 会同时关闭全部三个模块；如需仅禁用其中某一项，请使用配置页内的独立模块开关。
+- **整体启停粒度**：在 DSH 插件页停用 `客户端界面拓展` 会同时关闭全部四个模块；如需仅禁用其中某一项，请使用配置页内的独立模块开关。
 - **字体开关行为**：关闭「字体控制」开关仅隐藏配置界面，不会重置已写入 `ui-theme` 的字体；如需还原字体，请使用模块内的重置按钮。
 - **字体安装检测局限**：已安装字体检测基于 Canvas 文本宽度启发式测量；若特定字体在操作系统的注册名称与预设列表不一致，可能会被误判为「未安装」，但不影响实际选用。
 - **官方 UI 耦合度**：工作区接管与图标栏样式依赖于官方插槽锚点（`data-slot`）及外壳浮层结构（`shell.overlay`）。当 DSH 宿主版本升级导致 DOM 结构变化时，部分视觉表现可能需要随版本适配更新。
@@ -159,8 +167,8 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.3.tg
 **Q：升级后图标栏或页面还是旧样子怎么办？**  
 A：浏览器可能仍缓存了旧版客户端脚本，请尝试强制刷新（`Ctrl+Shift+R` 或 `Cmd+Shift+R`）。如果刷新后插件页仍显示旧卡片，先确认新版本已经安装，再重启 DSH，让 Host 重新加载 Loader 配置。
 
-**Q：我只想使用其中的「字体控制」功能，可以关闭另外两个模块吗？**  
-A：完全可以。在插件配置页中关闭「工作区拓展」和「插件边栏」的开关，仅保留「字体控制」开启即可。
+**Q：我只想使用其中的「字体控制」功能，可以关闭其他模块吗？**  
+A：完全可以。在插件配置页中关闭「工作区拓展」「插件边栏」和「其他 UI 组件优化」的开关，仅保留「字体控制」开启即可。
 
 **Q：为什么工作区拓展需要接管官方侧栏，而不是增量插入？**  
 A：官方的 `sidebar.workspaces` 属于单占位插槽（Single-slot）。为了实现「最近 / 工作区 / 聊天」的三段式信息架构，插件必须以更低优先级（`priority: -1`）接管该插槽；当关闭该模块时，插件会自动释放接管，官方侧栏随即恢复。
@@ -168,6 +176,13 @@ A：官方的 `sidebar.workspaces` 属于单占位插槽（Single-slot）。为�
 ---
 
 ## 更新日志
+
+### 0.4.0——2026-11-25 15:47
+
+- 新增「其他 UI 组件优化」模块
+- 对话轮次导航：锚点条等长，悬停时按距离形成曲线
+- 模块内增加「对话轮次导航条美化」开关
+- 模块开关适配深色 / 浅色主题
 
 ### 0.3.3——2026-11-25 11:48
 
