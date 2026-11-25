@@ -854,7 +854,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 
     //#region styles
     const CSS = `
-.dswb-root{--dswb-fg:var(--dsw-alias-label-primary,#1f2329);--dswb-fg-2:var(--dsw-alias-label-secondary,#5c6470);--dswb-fg-3:var(--dsw-alias-label-tertiary,#8a919c);--dswb-accent:var(--dsw-alias-label-link,#2f6feb);--dswb-hover:var(--dsw-alias-interactive-bg-hover,rgba(127,127,127,.12));--dswb-active:var(--dsw-alias-interactive-bg-active,rgba(127,127,127,.18));--dswb-line:var(--dsw-alias-line-border,rgba(127,127,127,.22));--dswb-bg:var(--dsw-specific-sidebar-fill,#f7f7f8);display:flex;flex-direction:column;min-height:0;height:100%;font-size:13.5px;color:var(--dswb-fg)}
+.dswb-root{--dswb-fg:var(--dsw-alias-label-primary,#1f2329);--dswb-fg-2:var(--dsw-alias-label-secondary,#5c6470);--dswb-fg-3:var(--dsw-alias-label-tertiary,#8a919c);--dswb-accent:var(--dsw-alias-label-link,#2f6feb);--dswb-hover:var(--dsw-alias-interactive-bg-hover,rgba(127,127,127,.12));--dswb-active:var(--dsw-alias-interactive-bg-active,rgba(127,127,127,.18));--dswb-line:var(--dsw-alias-border-l2,rgba(127,127,127,.22));--dswb-bg:var(--dsw-specific-sidebar-fill,#f7f7f8);display:flex;flex-direction:column;min-height:0;height:100%;font-size:13.5px;color:var(--dswb-fg)}
 .dswb-root *{box-sizing:border-box}
 .dswb-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 2px 8px}
 .dswb-new{display:flex;align-items:center;gap:8px;width:100%;height:32px;margin:2px 0 4px;padding:0 8px;border:0;border-radius:var(--dsw-radius-sm,6px);background:transparent;color:var(--dswb-fg);font:inherit;cursor:pointer;text-align:left}
@@ -935,7 +935,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .dswb-flash{-webkit-animation:dswb-flash 1.3s ease;animation:dswb-flash 1.3s ease}
 @keyframes dswb-flash{0%{background:var(--dswb-active)}60%{background:var(--dswb-active)}100%{background:transparent}}
 .dswb-empty{padding:6px 10px;font-size:12px;color:var(--dswb-fg-3)}
-.dswb-hovercard{position:fixed;z-index:2147483300;max-width:340px;min-width:200px;padding:10px 12px;border-radius:10px;background:var(--dsw-popover-bg,var(--dsw-alias-bg-popover,#fff));border:1px solid var(--dswb-line);box-shadow:0 8px 28px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.08);pointer-events:none;color:var(--dswb-fg)}
+.dswb-hovercard{position:fixed;z-index:2147483300;max-width:340px;min-width:200px;padding:10px 12px;border-radius:10px;background:var(--dsw-alias-bg-layer-2,#fff);border:1px solid var(--dswb-line);box-shadow:var(--dsw-elevation-panel,0 8px 28px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.08));pointer-events:none;color:var(--dswb-fg)}
 .dswb-hc-title{font-size:13px;font-weight:600;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dswb-hc-path{font-size:11.5px;color:var(--dswb-fg-2);word-break:break-all;margin-bottom:6px;line-height:1.45}
 .dswb-hc-meta{font-size:11.5px;color:var(--dswb-fg-3)}
@@ -951,7 +951,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .dswb-morerow.flat{padding-left:28px}
 .dswb-more{padding:0 6px;border:0;border-radius:5px;background:transparent;color:var(--dswb-fg-3);font:inherit;font-size:12px;line-height:22px;cursor:pointer}
 .dswb-more:hover{background:var(--dswb-hover);color:var(--dswb-fg)}
-.dswb-menu{position:fixed;z-index:2147483000;min-width:244px;padding:6px;border-radius:10px;background:var(--dsw-popover-bg,var(--dsw-alias-bg-popover,#fff));color:var(--dswb-fg);border:1px solid var(--dswb-line);box-shadow:0 8px 28px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.08);font-size:13px}
+.dswb-menu{position:fixed;z-index:2147483000;min-width:244px;padding:6px;border-radius:10px;background:var(--dsw-alias-bg-layer-2,#fff);color:var(--dswb-fg);border:1px solid var(--dswb-line);box-shadow:var(--dsw-elevation-panel,0 8px 28px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.08));font-size:13px}
 .dswb-menu button{display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .dswb-menu button:hover{background:var(--dswb-hover)}
 .dswb-mico{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;flex:none;color:var(--dswb-fg-2)}
@@ -962,7 +962,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .dswb-menu .dswb-sep{height:1px;margin:4px 6px;background:var(--dswb-line)}
 .dswb-menu .dswb-danger{color:var(--dsw-danger,#d33)}
 .dswb-scrim{position:fixed;inset:0;z-index:2147482000;background:transparent}
-.dswb-modal{position:fixed;z-index:2147482500;left:50%;top:22%;transform:translateX(-50%);width:340px;padding:16px;border-radius:12px;background:var(--dsw-popover-bg,var(--dsw-alias-bg-popover,#fff));color:var(--dswb-fg);border:1px solid var(--dswb-line);box-shadow:0 16px 48px rgba(0,0,0,.22)}
+.dswb-modal{position:fixed;z-index:2147482500;left:50%;top:22%;transform:translateX(-50%);width:340px;padding:16px;border-radius:12px;background:var(--dsw-alias-bg-layer-2,#fff);color:var(--dswb-fg);border:1px solid var(--dswb-line);box-shadow:var(--dsw-elevation-panel,0 16px 48px rgba(0,0,0,.22))}
 .dswb-modal h2{margin:0 0 10px;font-size:14px;font-weight:600}
 .dswb-modal p{margin:0 0 10px;font-size:12.5px;line-height:1.5;color:var(--dswb-fg-2)}
 .dswb-modal input{width:100%;height:32px;padding:0 8px;border:1px solid var(--dswb-line);border-radius:6px;background:transparent;color:inherit;font:inherit;margin-bottom:12px}
@@ -976,7 +976,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .dswb-rail{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 0}
 .dswb-rail button{width:34px;height:34px;border:0;border-radius:8px;background:transparent;color:var(--dswb-fg-3);cursor:pointer;font-size:16px;display:inline-flex;align-items:center;justify-content:center}
 .dswb-rail button:hover{background:var(--dswb-hover);color:var(--dswb-fg)}
-.dswb-wschip{display:inline-flex;align-items:center;gap:2px;height:24px;max-width:190px;padding:0 4px 0 8px;border:1px solid var(--dsw-alias-line-border,rgba(127,127,127,.28));border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary,#5c6470);font:inherit;font-size:12px;cursor:pointer}
+.dswb-wschip{display:inline-flex;align-items:center;gap:2px;height:24px;max-width:190px;padding:0 4px 0 8px;border:1px solid var(--dsw-alias-border-l2,rgba(127,127,127,.28));border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary,#5c6470);font:inherit;font-size:12px;cursor:pointer}
 .dswb-chattab{display:inline-flex;align-items:center;height:26px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary,#5c6470);font:inherit;font-size:12.5px;line-height:1;cursor:pointer}
 .dswb-chattab:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(127,127,127,.12));color:var(--dsw-alias-label-primary,#1f2329)}
 .dswb-wschip:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(127,127,127,.12));color:var(--dsw-alias-label-primary,#1f2329)}
@@ -984,10 +984,10 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .dswb-wschip .dswb-wsname{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dswb-wschip .dswb-wsicobtn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border:0;border-radius:4px;background:transparent;color:inherit;cursor:pointer}
 .dswb-wschip .dswb-wsicobtn:hover{background:var(--dsw-alias-interactive-bg-active,rgba(127,127,127,.2));color:var(--dsw-alias-label-primary,#1f2329)}
-.dswb-wsmenu{position:fixed;z-index:2147483000;min-width:210px;max-height:320px;overflow-y:auto;padding:6px;border-radius:10px;background:var(--dsw-alias-bg-popover,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-line-border,rgba(127,127,127,.22));box-shadow:0 8px 28px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.08);font-size:13px}
+.dswb-wsmenu{position:fixed;z-index:2147483000;min-width:210px;max-height:320px;overflow-y:auto;padding:6px;border-radius:10px;background:var(--dsw-alias-bg-layer-2,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l2,rgba(127,127,127,.22));box-shadow:var(--dsw-elevation-panel,0 8px 28px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.08));font-size:13px}
 .dswb-wsmenu button{display:flex;align-items:center;gap:8px;width:100%;height:30px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .dswb-wsmenu button:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(127,127,127,.12))}
-.dswb-wsmenu .dswb-sep{height:1px;margin:4px 6px;background:var(--dsw-alias-line-border,rgba(127,127,127,.22))}
+.dswb-wsmenu .dswb-sep{height:1px;margin:4px 6px;background:var(--dsw-alias-border-l2,rgba(127,127,127,.22))}
 .dswb-wsmenu .dswb-wscur{margin-left:auto;color:var(--dsw-alias-label-tertiary,#8a919c);font-size:11px}
 `
     const CSS_TAG = 'dsh-session-sidebar-extended/browse.css'
@@ -1610,7 +1610,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       ])
     }
 
-    function SessionRow({ session, status, archived, selected, flash, indexLabel, simple, pinned, t, onOpen, onMenu, onArchive, onPin, onUnpin, onArchivedClick, onHoverEnter, onHoverLeave, rowRef }) {
+    function SessionRow({ session, status, archived, selected, flash, indexLabel, simple, pinned, t, onOpen, onMenu, onArchive, onPin, onUnpin, onArchivedClick, onHoverEnter, rowRef }) {
       const title = session.blank ? t('newSession') : (session.title || t('untitled'))
       const pending = status && status.pendingInteraction && status.pendingInteraction.kind ? true : false
       const running = status ? status.running === true : session.running === true
@@ -1659,7 +1659,6 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
           onOpen(session.id)
         },
         onMouseEnter: onHoverEnter,
-        onMouseLeave: onHoverLeave,
         onKeyDown: (event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault()
@@ -1897,26 +1896,48 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 
       const [hoverCard, setHoverCard] = useState(null)
       const hoverTimer = useRef(null)
+      const hoverCardOpenRef = useRef(false)
       const clearHoverCard = useCallback(() => {
         if (hoverTimer.current !== null) {
           window.clearTimeout(hoverTimer.current)
           hoverTimer.current = null
         }
+        hoverCardOpenRef.current = false
         setHoverCard(null)
       }, [])
       const scheduleHoverCard = useCallback((event, content) => {
-        if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current)
+        if (hoverTimer.current !== null) {
+          window.clearTimeout(hoverTimer.current)
+          hoverTimer.current = null
+        }
         const rect = event.currentTarget.getBoundingClientRect()
-        hoverTimer.current = window.setTimeout(() => {
+        const show = () => {
           hoverTimer.current = null
           const cardWidth = 340
+          hoverCardOpenRef.current = true
           setHoverCard({
             ...content,
             left: Math.max(8, Math.min(rect.right + 10, window.innerWidth - cardWidth - 8)),
             top: Math.max(8, Math.min(rect.top - 4, window.innerHeight - 160)),
           })
-        }, 800)
+        }
+        if (hoverCardOpenRef.current) {
+          show()
+          return
+        }
+        hoverTimer.current = window.setTimeout(show, 800)
       }, [])
+
+      useEffect(() => {
+        if (!hoverCard) return
+        const onKey = (event) => {
+          if (event.key === 'Escape' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            clearHoverCard()
+          }
+        }
+        document.addEventListener('keydown', onKey, true)
+        return () => document.removeEventListener('keydown', onKey, true)
+      }, [hoverCard, clearHoverCard])
 
       useEffect(() => {
         if (!toast) return
@@ -2142,13 +2163,9 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       }, [actions])
 
       const openMenu = useCallback((event, payload) => {
-        if (hoverTimer.current !== null) {
-          window.clearTimeout(hoverTimer.current)
-          hoverTimer.current = null
-        }
-        setHoverCard(null)
+        clearHoverCard()
         setMenu({ x: event.clientX, y: event.clientY, ...payload })
-      }, [])
+      }, [clearHoverCard])
 
       const revealInTree = useCallback((sessionId) => {
         const owner = ownerOf(sessionId)
@@ -2418,7 +2435,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
         onPin: (row) => { void runSessionAction('pin', row) },
         onUnpin: (row) => { void runSessionAction('unpin', row) },
         onHoverEnter: (event) => {
-          if (!features.hoverCard) return
+          if (!features.hoverCard || menu) return
           const owner = ownerOf(session.id)
           const label = owner.kind === 'workspace' && owner.group ? owner.group.title : t('chat')
           scheduleHoverCard(event, {
@@ -2427,7 +2444,6 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
             meta: label + ' · ' + relativeTime(t, session.updatedAt),
           })
         },
-        onHoverLeave: clearHoverCard,
         rowRef: indexLabel === undefined ? (node) => {
           if (node) rowRefs.current[session.id] = node
           else delete rowRefs.current[session.id]
@@ -2461,14 +2477,13 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
             onPointerUp: cancelHold,
             onPointerLeave: cancelHold,
             onMouseEnter: (event) => {
-              if (!features.hoverCard) return
+              if (!features.hoverCard || menu) return
               scheduleHoverCard(event, {
                 title: group.title,
                 path: group.path || '',
                 meta: group.createdAt ? t('createdAt', { time: formatDateTime(group.createdAt) }) : '',
               })
             },
-            onMouseLeave: clearHoverCard,
             onKeyDown: (event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault()
@@ -2531,8 +2546,8 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
         ])
       }
 
-      return h('div', { className: 'dswb-root' + (sortMode === 'manual' ? ' is-manual' : '') }, [
-        h('div', { key: 'scroll', className: 'dswb-scroll' }, [
+      return h('div', { className: 'dswb-root' + (sortMode === 'manual' ? ' is-manual' : ''), onMouseLeave: clearHoverCard }, [
+        h('div', { key: 'scroll', className: 'dswb-scroll', onScroll: clearHoverCard }, [
           loading ? h('div', { key: 'loading', className: 'dswb-empty' }, t('loading')) : null,
 
           !loading && !searchActive && features.recent && allSessions.length > 0 ? h(React.Fragment, { key: 'recent' }, [
@@ -4340,8 +4355,8 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
     const ENABLED_DEFAULTS = { font: true, sidebar: true, rail: true }
 
     const zh = {
-      'panel': '界面美化',
-      'title': '界面美化',
+      'panel': '客户端界面拓展',
+      'title': '客户端界面拓展',
       'intro': '字体、插件边栏与工作区拓展集中在这里；每个模块都可以收起或展开。',
       'module.font.title': '字体控制',
       'module.font.desc': '为界面、代码与终端分别配置中文和西文字体，支持关键字搜索与一键恢复默认。',
@@ -4447,17 +4462,16 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 
     const CHANGELOG = [
       {
-        time: '2026-11-25 11:20',
-        title: '0.3.2 文档与更新日志整理',
+        time: '2026-11-25 11:48',
+        title: '0.3.3——2026-11-25 11:48',
         lines: [
-          '更新日志改为按本插件自身版本叙述',
-          '字体控制、工作区拓展、插件边栏统一描述为三个模块',
-          '中英文 README 与插件页说明同步更新',
+          '增加右键菜单与悬停卡片对深色主题适配',
+          '触发悬停卡片时移动鼠标保持悬停卡片状态',
         ],
       },
       {
-        time: '2026-11-24 14:00',
-        title: '0.3.1 许可证与双语文档',
+        time: '2026-11-24 15:00',
+        title: '0.3.1——2026-11-24 15:00',
         lines: [
           '新增 MIT LICENSE，并在 package.json 声明 license',
           '补充中英文 README 与仓库元数据',
@@ -4465,38 +4479,13 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       },
       {
         time: '2026-11-24 10:35',
-        title: '0.3.0 单页三模块配置中心',
+        title: '0.3.0——2026-11-24 10:35',
         lines: [
-          '左侧图标栏统一为一个入口，打开一个页面',
-          '字体控制 / 工作区拓展 / 插件边栏三个模块可独立启停、收起展开',
-          '工作区模块的 8 个开关改成「功能 / 状态」表格样式',
+          '一个图标栏入口、一个配置页，字体控制 / 工作区拓展 / 插件边栏三个模块',
+          '每个模块可独立启停、收起展开',
+          '工作区 8 个开关改成「功能 / 状态」表格',
+          '字体模块加入字体库、搜索、已安装筛选与恢复默认',
         ],
-      },
-      {
-        time: '2026-11-24 10:00',
-        title: '图标栏账户入口',
-        lines: ['账户入口收进图标栏底部', '未登录时显示用户图标'],
-      },
-      {
-        time: '2026-11-23 21:40',
-        title: '工作区模块：三段式侧栏与功能开关',
-        lines: [
-          '最近 / 工作区 / 聊天三段式结构',
-          '搜索、排序筛选、右键菜单、拖拽排序与 8 个功能开关',
-        ],
-      },
-      {
-        time: '2026-11-23 21:05',
-        title: '字体模块：字体库与搜索',
-        lines: [
-          '按界面与对话 / 代码 / 终端三个分区配置中英文字体',
-          '内置字体库、搜索、已安装筛选与恢复默认',
-        ],
-      },
-      {
-        time: '2026-11-23 20:30',
-        title: '图标栏模块：左侧窄栏与导航',
-        lines: ['插件与自动化任务收进左侧图标栏', '鲸鱼回到会话，新会话上移'],
       },
     ]
 
@@ -4749,8 +4738,6 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
           className: 'cfui-log-entry',
         },
           h('div', { className: 'cfui-log-entry-head' },
-            h('span', { className: 'cfui-log-time' }, entry.time),
-            h('span', { className: 'cfui-log-sep' }, '|'),
             h('span', { className: 'cfui-log-name' }, entry.title),
           ),
           h('ul', { className: 'cfui-log-items' }, entry.lines.map((line, index) => h('li', { key: index }, line))),

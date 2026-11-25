@@ -2,9 +2,9 @@
 
 English | [中文](README.zh.md)
 
-**Client Front UI (界面美化)** — A DSH Web extension with three interface modules: Font Controller, Workspace Extended, and Plugin Rail.
+**Client Front UI (客户端界面拓展)** — A DSH Web extension with three interface modules: Font Controller, Workspace Extended, and Plugin Rail.
 
-[![version](https://img.shields.io/badge/version-0.3.2-blue.svg)](#changelog)
+[![version](https://img.shields.io/badge/version-0.3.3-blue.svg)](#changelog)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#compatibility--architecture)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#compatibility--architecture)
 
@@ -14,7 +14,7 @@ English | [中文](README.zh.md)
 
 * **Package Name**: `dsh-client-front-ui`
 * **Loader Key**: `client-front-ui`
-* **Plugin Title**: Client Front UI / 界面美化
+* **Plugin Title**: Client Front UI / 客户端界面拓展
 * **Platform**: DSH Web (tested on the `desktop` profile)
 
 ## Table of Contents
@@ -68,7 +68,7 @@ The repository root serves directly as the plugin package root (containing `pack
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # Or specify a version
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.2
+dsh plugin --profile desktop add dsh-client-front-ui@0.3.3
 ```
 
 ### Option 2: Install from GitHub
@@ -85,7 +85,7 @@ dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front
 dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui
 
 # From a packaged .tgz tarball
-dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.2.tgz
+dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.3.tgz
 ```
 
 > **GUI Installation**: You can also navigate to **Plugins → Add Plugin** in DSH Web and enter the npm package name, Git repository URL, `.tgz` path, or local directory path directly (on Windows, paths like `F:\plugins\client-front-ui` work out of the box).
@@ -149,23 +149,23 @@ A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementin
 
 ## Changelog
 
-### 0.3.2
+### 0.3.3——2026-11-25 11:48
 
-* **Documentation**: rewrote the changelog and product history from this plugin's own perspective. Font Controller, Workspace Extended and Plugin Rail are described as the plugin's modules, not as separate packages.
-* Updated the bilingual README and in-app release notes; no runtime changes.
+* Added dark-theme support for the context menu and hover card.
+* Kept the hover card open while the pointer moves between rows.
 
-### 0.3.1
+### 0.3.1——2026-11-24 15:00
 
 * **License**: added the MIT `LICENSE` file and the `license` field in `package.json`.
 * **Documentation**: added the bilingual README set and the repository/homepage metadata.
 * No runtime changes; this release only ships package metadata and documentation updates.
 
-### 0.3.0
+### 0.3.0——2026-11-24 10:35
 
 * **Initial public release**: one rail entry, one configuration page, and three modules — Font Controller, Workspace Extended and Plugin Rail.
 * **Per-module controls**: each module can be enabled, disabled and collapsed independently.
 * **Workspace settings table**: the eight feature switches render as a bordered table with a Feature / State header.
-* Removed redundant module overview cards and moved release notes to the plugin details page.
+* Removed redundant module overview cards.
 
 ## License
 

@@ -2,9 +2,9 @@
 
 [English](README.md) | 中文
 
-**界面美化（Client Front UI）** —— 一个包含字体控制、工作区拓展与插件边栏三个模块的 DSH Web 扩展插件。
+**客户端界面拓展（Client Front UI）** —— 一个包含字体控制、工作区拓展与插件边栏三个模块的 DSH Web 扩展插件。
 
-[![version](https://img.shields.io/badge/version-0.3.2-blue.svg)](#更新日志)
+[![version](https://img.shields.io/badge/version-0.3.3-blue.svg)](#更新日志)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#兼容性与技术实现)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#兼容性与技术实现)
 
@@ -16,7 +16,7 @@
 
 - **包名**：`dsh-client-front-ui`
 - **Loader 标识**：`client-front-ui`
-- **插件名称**：界面美化 / Client Front UI
+- **插件名称**：客户端界面拓展 / Client Front UI
 - **适用平台**：DSH Web（已于 `desktop` profile 验证）
 
 ---
@@ -76,7 +76,7 @@
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # 或指定版本
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.2
+dsh plugin --profile desktop add dsh-client-front-ui@0.3.3
 ```
 
 ### 方式二：通过 GitHub 仓库安装
@@ -93,7 +93,7 @@ dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front
 dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui
 
 # 从打包好的 tgz 归档安装
-dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.2.tgz
+dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.3.tgz
 ```
 
 > **图形界面安装**：你也可以在 DSH Web 中前往 **插件 → 添加插件**，直接输入 npm 包名、Git 仓库 URL、`.tgz` 路径或本地文件夹绝对路径（Windows 下可直接填写如 `F:\plugins\client-front-ui`）。
@@ -104,7 +104,7 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.2.tg
 
 ## 快速上手
 
-1. 前往 **插件 → 已安装插件**，找到 **界面美化** 并开启。
+1. 前往 **插件 → 已安装插件**，找到 **客户端界面拓展** 并开启。
 2. 刷新页面后，点击左侧图标栏新增的 **滑杆图标**（或直接进入插件详情页）打开配置面板。
 3. 通过各模块标题栏右侧的控件进行管理：
    - **启用开关**：控制该模块功能的开启与关闭。
@@ -112,7 +112,7 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.2.tg
 
 | 界面位置 | 变化说明 |
 | --- | --- |
-| **插件管理页** | 只有一张卡片：**界面美化** |
+| **插件管理页** | 只有一张卡片：**客户端界面拓展** |
 | **左侧图标栏** | 新增滑杆配置入口（保留官方「插件」「自动化任务」入口） |
 | **配置详情页** | 左侧图标栏入口与插件详情页共享同一套三模块配置界面 |
 
@@ -146,7 +146,7 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.2.tg
 
 ## 已知限制
 
-- **整体启停粒度**：在 DSH 插件页停用 `界面美化` 会同时关闭全部三个模块；如需仅禁用其中某一项，请使用配置页内的独立模块开关。
+- **整体启停粒度**：在 DSH 插件页停用 `客户端界面拓展` 会同时关闭全部三个模块；如需仅禁用其中某一项，请使用配置页内的独立模块开关。
 - **字体开关行为**：关闭「字体控制」开关仅隐藏配置界面，不会重置已写入 `ui-theme` 的字体；如需还原字体，请使用模块内的重置按钮。
 - **字体安装检测局限**：已安装字体检测基于 Canvas 文本宽度启发式测量；若特定字体在操作系统的注册名称与预设列表不一致，可能会被误判为「未安装」，但不影响实际选用。
 - **官方 UI 耦合度**：工作区接管与图标栏样式依赖于官方插槽锚点（`data-slot`）及外壳浮层结构（`shell.overlay`）。当 DSH 宿主版本升级导致 DOM 结构变化时，部分视觉表现可能需要随版本适配更新。
@@ -169,23 +169,23 @@ A：官方的 `sidebar.workspaces` 属于单占位插槽（Single-slot）。为�
 
 ## 更新日志
 
-### 0.3.2
+### 0.3.3——2026-11-25 11:48
 
-- **文档整理**：更新日志和产品历史改成按本插件自身版本叙述，字体控制、工作区拓展、插件边栏统一描述为插件的三个模块。
-- 同步更新中英文 README 与插件页说明；无运行时改动。
+- 增加右键菜单与悬停卡片对深色主题适配
+- 触发悬停卡片时移动鼠标保持悬停卡片状态
 
-### 0.3.1
+### 0.3.1——2026-11-24 15:00
 
 - **许可证**：新增 MIT `LICENSE` 文件，并在 `package.json` 中声明 `license` 字段。
 - **文档**：补充中英文 README，以及仓库地址和主页元数据。
 - 无运行时改动；本版本只更新包元数据和文档。
 
-### 0.3.0
+### 0.3.0——2026-11-24 10:35
 
 - **首个公开版本**：一个图标栏入口、一个配置页，以及字体控制、工作区拓展、插件边栏三个模块。
 - **模块级控制**：每个模块都可以独立启用、停用和收起展开。
 - **工作区设置表格**：8 个功能开关改成带「功能 / 状态」表头的边框表格。
-- 移除模块内冗余概览卡片，并把更新日志放到插件详情页。
+- 移除模块内冗余概览卡片。
 
 ---
 
