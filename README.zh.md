@@ -2,9 +2,9 @@
 
 [English](README.md) | 中文
 
-**界面美化（Client Front UI）** —— 将字体控制、工作区拓展与插件边栏整合为单一 DSH Web 扩展插件。
+**界面美化（Client Front UI）** —— 一个包含字体控制、工作区拓展与插件边栏三个模块的 DSH Web 扩展插件。
 
-[![version](https://img.shields.io/badge/version-0.3.1-blue.svg)](#更新日志)
+[![version](https://img.shields.io/badge/version-0.3.2-blue.svg)](#更新日志)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#兼容性与技术实现)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#兼容性与技术实现)
 
@@ -12,7 +12,7 @@
 
 ## 简介
 
-`dsh-client-front-ui` 将原有的三个独立 DSH Web 插件——**字体控制**、**会话侧栏拓展**与**插件边栏**——合并为单一扩展包。安装后，插件列表仅保留一张卡片，左侧图标栏仅新增一个统一入口，点击即可在单个配置页中独立启停、折叠管理三大界面增强模块。
+`dsh-client-front-ui` 是一个 DSH Web 扩展插件，内含**字体控制**、**工作区拓展**与**插件边栏**三个可独立开关的模块。安装后，插件列表只保留一张卡片，左侧图标栏只新增一个统一入口；点击即可在单个配置页中独立启停、折叠管理三个模块。
 
 - **包名**：`dsh-client-front-ui`
 - **Loader 标识**：`client-front-ui`
@@ -26,7 +26,6 @@
 - [核心特性](#核心特性)
 - [安装](#安装)
 - [快速上手](#快速上手)
-- [从旧版本插件迁移](#从旧版本插件迁移)
 - [配置与数据持久化](#配置与数据持久化)
 - [兼容性与技术实现](#兼容性与技术实现)
 - [已知限制](#已知限制)
@@ -77,7 +76,7 @@
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # 或指定版本
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.1
+dsh plugin --profile desktop add dsh-client-front-ui@0.3.2
 ```
 
 ### 方式二：通过 GitHub 仓库安装
@@ -94,7 +93,7 @@ dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front
 dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui
 
 # 从打包好的 tgz 归档安装
-dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.1.tgz
+dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.2.tgz
 ```
 
 > **图形界面安装**：你也可以在 DSH Web 中前往 **插件 → 添加插件**，直接输入 npm 包名、Git 仓库 URL、`.tgz` 路径或本地文件夹绝对路径（Windows 下可直接填写如 `F:\plugins\client-front-ui`）。
@@ -113,21 +112,9 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.1.tg
 
 | 界面位置 | 变化说明 |
 | --- | --- |
-| **插件管理页** | 合并为单张卡片：**界面美化** |
+| **插件管理页** | 只有一张卡片：**界面美化** |
 | **左侧图标栏** | 新增滑杆配置入口（保留官方「插件」「自动化任务」入口） |
 | **配置详情页** | 左侧图标栏入口与插件详情页共享同一套三模块配置界面 |
-
----
-
-## 从旧版本插件迁移
-
-如果你此前安装过拆分版本的三个独立插件（`font-controller`、`dsh-plugin-sidebar`、`dsh-session-sidebar-extended`），请按以下步骤平滑迁移：
-
-1. 在插件页停用并卸载上述三个旧插件（或从 profile 的 `dsh.profile.bundles` 与依赖列表中移除）。
-2. 按照 [安装](#安装) 章节的步骤安装 `dsh-client-front-ui`。
-3. 启用新插件并刷新页面。
-
-> **数据无损继承**：合并后的插件沿用原有的存储键名，你此前配置的字体偏好（`ui-theme`）与工作区开关状态（`dswb.features.v1`）将自动继承，无需重新配置。请勿将新旧插件同时启用，以免产生插槽冲突。
 
 ---
 
@@ -169,8 +156,8 @@ dsh plugin --profile desktop add file:/绝对路径/dsh-client-front-ui-0.3.1.tg
 
 ## 常见问题 (FAQ)
 
-**Q：更新后左侧图标栏仍显示旧版的 `Aa` 或列表图标怎么办？**  
-A：浏览器可能仍缓存了旧版客户端脚本，请尝试强制刷新（`Ctrl+Shift+R` 或 `Cmd+Shift+R`）。若刷新后插件页仍存在旧插件卡片，说明运行中的 Host 进程仍持有旧 Loader 配置，请重启 DSH 服务或确认已移除旧插件依赖。
+**Q：升级后图标栏或页面还是旧样子怎么办？**  
+A：浏览器可能仍缓存了旧版客户端脚本，请尝试强制刷新（`Ctrl+Shift+R` 或 `Cmd+Shift+R`）。如果刷新后插件页仍显示旧卡片，先确认新版本已经安装，再重启 DSH，让 Host 重新加载 Loader 配置。
 
 **Q：我只想使用其中的「字体控制」功能，可以关闭另外两个模块吗？**  
 A：完全可以。在插件配置页中关闭「工作区拓展」和「插件边栏」的开关，仅保留「字体控制」开启即可。
@@ -182,6 +169,11 @@ A：官方的 `sidebar.workspaces` 属于单占位插槽（Single-slot）。为�
 
 ## 更新日志
 
+### 0.3.2
+
+- **文档整理**：更新日志和产品历史改成按本插件自身版本叙述，字体控制、工作区拓展、插件边栏统一描述为插件的三个模块。
+- 同步更新中英文 README 与插件页说明；无运行时改动。
+
 ### 0.3.1
 
 - **许可证**：新增 MIT `LICENSE` 文件，并在 `package.json` 中声明 `license` 字段。
@@ -190,12 +182,10 @@ A：官方的 `sidebar.workspaces` 属于单占位插槽（Single-slot）。为�
 
 ### 0.3.0
 
-- **架构合并**：将原 `font-controller`、`dsh-plugin-sidebar`、`dsh-session-sidebar-extended` 合并为单一插件包与单一 Loader 行。
-- **统一配置中心**：新增左侧图标栏统一入口与三模块可折叠配置面板，支持模块级独立启停开关。
-- **UI 细节优化**：将工作区拓展设置项重构为带「功能 / 状态」表头的边框表格；移除模块内冗余概览卡片，并将历史更新日志迁移至插件详情页。
-- **向后兼容**：完整保留原有三大模块的核心交互逻辑及持久化存储键名。
-
-> 三个旧版独立插件的早期版本历史可在 DSH 插件详情页的完整更新日志中查看。
+- **首个公开版本**：一个图标栏入口、一个配置页，以及字体控制、工作区拓展、插件边栏三个模块。
+- **模块级控制**：每个模块都可以独立启用、停用和收起展开。
+- **工作区设置表格**：8 个功能开关改成带「功能 / 状态」表头的边框表格。
+- 移除模块内冗余概览卡片，并把更新日志放到插件详情页。
 
 ---
 

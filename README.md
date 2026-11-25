@@ -2,15 +2,15 @@
 
 English | [中文](README.zh.md)
 
-**Client Front UI (界面美化)** — A unified DSH Web extension consolidating Font Controller, Workspace Extended, and Plugin Rail into a single bundle.
+**Client Front UI (界面美化)** — A DSH Web extension with three interface modules: Font Controller, Workspace Extended, and Plugin Rail.
 
-[![version](https://img.shields.io/badge/version-0.3.1-blue.svg)](#changelog)
+[![version](https://img.shields.io/badge/version-0.3.2-blue.svg)](#changelog)
 [![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#compatibility--architecture)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#compatibility--architecture)
 
 ## Overview
 
-`dsh-client-front-ui` merges three previously standalone DSH Web plugins—**Font Controller**, **Session Sidebar Extended**, and **Plugin Rail**—into a single package. Once installed, it appears as a single card on the Plugins page and adds one unified entry to the left icon rail, opening a centralized configuration view where each module can be independently toggled and collapsed.
+`dsh-client-front-ui` is a single DSH Web extension with three independently switchable modules: **Font Controller**, **Workspace Extended**, and **Plugin Rail**. It appears as one card on the Plugins page and adds one entry to the left icon rail; that entry opens a centralized configuration view where each module can be toggled and collapsed.
 
 * **Package Name**: `dsh-client-front-ui`
 * **Loader Key**: `client-front-ui`
@@ -22,7 +22,6 @@ English | [中文](README.zh.md)
 * [Core Features](#core-features)
 * [Installation](#installation)
 * [Quick Start](#quick-start)
-* [Migrating from Legacy Plugins](#migrating-from-legacy-plugins)
 * [Settings & Persistence](#settings--persistence)
 * [Compatibility & Architecture](#compatibility--architecture)
 * [Known Limitations](#known-limitations)
@@ -69,7 +68,7 @@ The repository root serves directly as the plugin package root (containing `pack
 ```bash
 dsh plugin --profile desktop add dsh-client-front-ui
 # Or specify a version
-dsh plugin --profile desktop add dsh-client-front-ui@0.3.1
+dsh plugin --profile desktop add dsh-client-front-ui@0.3.2
 ```
 
 ### Option 2: Install from GitHub
@@ -86,7 +85,7 @@ dsh plugin --profile desktop add git+https://github.com/QinzYee/dsh-client-front
 dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui
 
 # From a packaged .tgz tarball
-dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.1.tgz
+dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.2.tgz
 ```
 
 > **GUI Installation**: You can also navigate to **Plugins → Add Plugin** in DSH Web and enter the npm package name, Git repository URL, `.tgz` path, or local directory path directly (on Windows, paths like `F:\plugins\client-front-ui` work out of the box).
@@ -103,19 +102,9 @@ dsh plugin --profile desktop add file:/absolute/path/to/dsh-client-front-ui-0.3.
 
 | UI Location | Behavior |
 | --- | --- |
-| **Plugins Page** | Consolidated into a single card: **Client Front UI** |
+| **Plugins Page** | One card: **Client Front UI** |
 | **Left Icon Rail** | Adds a sliders configuration button (official "Plugins" and "Scheduled tasks" entries remain intact) |
 | **Configuration View** | Both the rail entry and the plugin details page render the exact same three-module settings panel |
-
-## Migrating from Legacy Plugins
-
-If you previously used the three standalone plugins (`font-controller`, `dsh-plugin-sidebar`, and `dsh-session-sidebar-extended`), follow these steps to migrate smoothly:
-
-1. Disable and uninstall the three legacy plugins from the Plugins page (or remove them from `dsh.profile.bundles` and your profile dependencies).
-2. Install `dsh-client-front-ui` following the [Installation](#installation) instructions.
-3. Enable the new plugin and refresh the page.
-
-> **Seamless Data Migration**: The unified plugin uses the exact same storage keys. Your existing font preferences (`ui-theme`) and workspace feature toggles (`dswb.features.v1`) carry over automatically. Avoid running the legacy plugins alongside `dsh-client-front-ui` to prevent slot conflicts.
 
 ## Settings & Persistence
 
@@ -149,8 +138,8 @@ All plugin states are stored locally in your browser or within your active DSH p
 
 ## FAQ
 
-**Q: Why do I still see the old `Aa` or list icons on the left rail after upgrading?**  
-A: Your browser may still be serving a cached client bundle. Perform a hard refresh (`Ctrl+Shift+R` or `Cmd+Shift+R`). If legacy plugin cards still appear on the Plugins page afterward, the running DSH Host process is still holding onto old Loader entries—restart DSH or remove the legacy bundles.
+**Q: After upgrading, the rail or page still looks like the previous version. What should I do?**  
+A: The browser may still be running a cached client bundle. Hard-refresh with `Ctrl+Shift+R` (or `Cmd+Shift+R`). If the Plugins page still shows an outdated card, confirm the new version is installed and restart DSH so the Host reloads its Loader graph.
 
 **Q: Can I use only the Font Controller module?**  
 A: Yes. Simply toggle off **Workspace Extended** and **Plugin Rail** in the settings panel while leaving **Font Controller** enabled.
@@ -160,6 +149,11 @@ A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementin
 
 ## Changelog
 
+### 0.3.2
+
+* **Documentation**: rewrote the changelog and product history from this plugin's own perspective. Font Controller, Workspace Extended and Plugin Rail are described as the plugin's modules, not as separate packages.
+* Updated the bilingual README and in-app release notes; no runtime changes.
+
 ### 0.3.1
 
 * **License**: added the MIT `LICENSE` file and the `license` field in `package.json`.
@@ -168,12 +162,10 @@ A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementin
 
 ### 0.3.0
 
-* **Unified Bundle**: Consolidated `font-controller`, `dsh-plugin-sidebar`, and `dsh-session-sidebar-extended` into a single plugin and Loader entry.
-* **Centralized Settings View**: Added a single rail entry and a collapsible three-module configuration page with per-module enable toggles.
-* **UI Refinements**: Redesigned Workspace Extended settings into a bordered table with **Feature / State** headers, removed redundant module overview cards, and moved full release notes to the plugin details page.
-* **Backward Compatibility**: Preserved all original behaviors and storage keys across all three modules.
-
-> Earlier release histories for the three legacy plugins remain available in the changelog tab on the plugin details page.
+* **Initial public release**: one rail entry, one configuration page, and three modules — Font Controller, Workspace Extended and Plugin Rail.
+* **Per-module controls**: each module can be enabled, disabled and collapsed independently.
+* **Workspace settings table**: the eight feature switches render as a bordered table with a Feature / State header.
+* Removed redundant module overview cards and moved release notes to the plugin details page.
 
 ## License
 

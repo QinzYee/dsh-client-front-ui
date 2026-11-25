@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Client Front UI",
-    "description": "Fonts, the plugin rail and the workspace extension in one plugin, split into three switchable collapsible modules."
+    "description": "Three modules — Fonts, Workspace Extended and Plugin Rail — with independent switches and collapsible panels."
   }
 }
