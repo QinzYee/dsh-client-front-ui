@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Client Front UI",
-    "description": "Three modules — Fonts, Workspace Extended and Other UI Enhancements — the last containing Plugin Rail, turn navigation and composer polish."
+    "description": "Three modules — Fonts, Workspace Extended and Other UI Enhancements — the last containing Plugin Rail, turn navigation and composer polish (model icon, skill picker and MCP picker)."
   }
 }

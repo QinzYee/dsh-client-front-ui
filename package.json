@@ -2,7 +2,7 @@
   "name": "dsh-client-front-ui",
   "version": "0.5.0",
   "type": "module",
-  "description": "Client Front UI (客户端界面拓展): font, workspace and other UI modules for the DSH Web GUI, including the plugin rail, turn navigation and composer polish.",
+  "description": "Client Front UI (客户端界面拓展): font, workspace and other UI modules for the DSH Web GUI, including the plugin rail, turn navigation, model icon, skill picker and MCP picker.",
   "license": "MIT",
   "repository": {
     "type": "git",

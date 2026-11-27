@@ -57,7 +57,7 @@ Outer-layer polish for the official DSH UI. It does not modify DSH components; d
 
 * **Plugin Rail**: moves Plugins, Scheduled tasks and every global panel registered on `sidebar.panellist` into a 40×40 vertical rail; hides the brand row, moves **New session** to the top and keeps the account entry at the foot. Styling is scoped under `html[data-client-front-ui='on']`.
 * **Turn navigation**: rail marks are equal length and colour at rest, with only the official active mark highlighted. On hover, the pointed mark grows and neighbouring marks fall off by distance in a bell-like curve, with a springy transition.
-* **Composer polish**: replaces the model selector's text with a compact brain-and-circuit icon. The button still opens the same model menu and keeps its original `aria-label` and `title`; disabling restores the text.
+* **Composer polish**: replaces the model selector's text with a compact brain-and-circuit icon, and adds two matching pickers before it. The **skill picker** (hammer) lists the session's skills and writes the official `/name ` invocation into the draft, so the Host loads that skill for the next message. The **MCP picker** (chain link) reads the MCP manager's live fleet, marks one server as the session focus, shows its connection/tool status and reconnects a failed server when picked. Both triggers stay icon-only at rest and show a small label plus dot while active. Disabling restores the original composer.
 * **Per-feature switches**: the module stays available while each of the three features can be toggled independently.
 * **Non-invasive**: features only tag official elements, add scoped styles or CSS variables and remove everything on disable; the official React components are untouched.
 
@@ -136,6 +136,8 @@ All plugin states are stored locally in your browser or within your active DSH p
 * **Font Module Switch Behavior**: Turning off the Font Controller switch only hides its UI panel and does not reset fonts already saved in `ui-theme`. Use the module's reset buttons to revert fonts.
 * **Installed Font Detection**: Detection relies on canvas text-width heuristics; if a local font is registered under a different system name, it may be flagged as uninstalled even though it can still be selected.
 * **Host DOM Coupling**: Workspace overrides and rail styles depend on official slot anchors (`data-slot`) and shell overlay structures (`shell.overlay`). Future DSH UI updates may require selector adjustments.
+* **MCP picker scope**: It lists servers owned by the MCP manager. Static `@deepseek-ai/dsh-mcp-client` rows composed directly in `cordis.yml` are not exposed through the browser API, so they do not appear in the picker.
+* **Skill applies to the next message**: The picker inserts the official `/name` text; DSH loads that skill for the message being composed. Select it again from the picker to apply it to another message.
 * **Web-Only Scope**: Built exclusively for DSH Web; provides no CLI, TUI, or model-facing tools.
 
 ## FAQ
@@ -155,6 +157,10 @@ A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementin
 
 * Moved **Plugin Rail** from a module into a feature under **Other UI Enhancements**.
 * Added **Composer polish**: the model selector shows a brain-and-circuit icon; its text is restored when disabled.
+* Added the **skill picker** to composer polish: hammer icon, searchable skill list, official `/name` invocation inserted into the draft, subtle active state.
+* Added the **MCP picker** to composer polish: chain-link icon, live MCP-manager server list with status dots and tool counts, per-session focus, reconnect on picking a failed server.
+* Matched the new icons to the model icon's 16px size and 1.7 stroke; removed the menu arrow from both triggers.
+
 
 ### 0.4.0——2026-11-25 15:47
 

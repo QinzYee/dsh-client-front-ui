@@ -4344,6 +4344,817 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 
     }
 
+/**
+ * Shared composer picker kit: trigger chip, portaled menu, search field,
+ * status dots and the two custom glyphs. Kept as a module body so the
+ * front-ui builder can fold it into the single client bundle.
+ *
+ * The kit deliberately uses only `react`, `react-dom` and theme tokens: the
+ * composer slot is shared with the official model seat, so the controls must
+ * inherit the host palette and never depend on another plugin's CSS module.
+ */
+function createPickerKit(require) {
+  const React = require('react')
+  const { createPortal } = require('react-dom')
+  const h = React.createElement
+
+  const STYLE_ATTR = 'data-cfui-picker-style'
+  let styleRefs = 0
+  let styleNode = null
+
+  const CSS = `
+.cfui-pick{position:relative;display:inline-flex;min-width:0}
+.cfui-pick-trigger{display:inline-flex;align-items:center;gap:5px;height:28px;max-width:190px;min-width:0;padding:0 6px;border:0;border-radius:var(--dsw-radius-sm,6px);background:transparent;color:var(--dsw-alias-label-secondary,#61666d);font:inherit;font-size:13px;line-height:20px;font-weight:400;cursor:pointer;outline:none}
+.cfui-pick-trigger:disabled{color:var(--dsw-alias-label-dimmed,#b3b7bd);cursor:default}
+@media (hover:hover){.cfui-pick-trigger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover,rgba(0,0,0,.04))}}
+.cfui-pick-trigger:focus-visible{box-shadow:0 0 0 2px var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary,#2f6bff))}
+.cfui-pick-icon{display:inline-flex;flex:none;width:16px;height:16px;align-items:center;justify-content:center;color:inherit;transition:color .15s ease}
+.cfui-pick-trigger[data-active=true] .cfui-pick-icon{color:var(--dsw-alias-state-business-primary,#2f6bff)}
+.cfui-pick-trigger[data-active=true] .cfui-pick-label{color:var(--dsw-alias-label-secondary,#61666d)}
+.cfui-pick-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cfui-pick-dot{flex:none;width:5px;height:5px;border-radius:50%;background:var(--dsw-alias-state-business-primary,#2f6bff);opacity:.8}
+.cfui-pick-trigger[data-tone=warn] .cfui-pick-dot{background:var(--dsw-alias-state-warn-primary,#b87700)}
+.cfui-pick-trigger[data-tone=error] .cfui-pick-dot{background:var(--dsw-alias-state-error-primary,#d93026)}
+.cfui-pick-trigger[data-tone=muted] .cfui-pick-dot{background:var(--dsw-alias-label-caption,#8a919c);opacity:.55}
+.cfui-pick-menu{position:fixed;z-index:1100;box-sizing:border-box;display:flex;flex-direction:column;width:min(320px,calc(100vw - 24px));max-height:min(380px,calc(100vh - 88px));padding:4px;border:0;border-radius:var(--dsw-radius-xl,12px);background:var(--dsw-alias-bg-layer-1,#fff);box-shadow:var(--dsw-elevation-prominent,0 10px 30px rgba(0,0,0,.18));color:var(--dsw-alias-label-primary,#1f2329);overflow:hidden;outline:none}
+.cfui-pick-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 4px;color:var(--dsw-alias-label-tertiary,#8a919c);font-size:11px;line-height:16px;font-weight:500;letter-spacing:.02em;text-transform:none;flex:none}
+.cfui-pick-head b{color:var(--dsw-alias-label-secondary,#61666d);font-weight:500}
+.cfui-pick-head-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;padding:0;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-tertiary,#8a919c);cursor:pointer}
+.cfui-pick-head-btn:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(0,0,0,.04));color:var(--dsw-alias-label-secondary,#61666d)}
+.cfui-pick-search{position:relative;display:flex;align-items:center;flex:none;margin:2px 2px 4px}
+.cfui-pick-search input{box-sizing:border-box;width:100%;height:30px;padding:0 26px 0 8px;border:0;border-radius:var(--dsw-radius-md,8px);outline:none;background:var(--dsw-alias-bg-layer-2,#f5f6f8);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:12px;line-height:18px}
+.cfui-pick-search input::placeholder{color:var(--dsw-alias-label-caption,#8a919c)}
+.cfui-pick-search-icon{position:absolute;right:7px;display:inline-flex;width:12px;height:12px;color:var(--dsw-alias-label-caption,#8a919c);pointer-events:none}
+.cfui-pick-list{display:flex;flex-direction:column;min-height:0;overflow-x:hidden;overflow-y:auto;padding:0 0 2px}
+.cfui-pick-list::-webkit-scrollbar{width:6px}
+.cfui-pick-list::-webkit-scrollbar-thumb{background:var(--dsw-alias-scrollbar-bg-l2,rgba(0,0,0,.16));border-radius:3px}
+.cfui-pick-row{display:flex;align-items:center;gap:8px;width:100%;min-height:34px;padding:5px 8px;border:0;border-radius:var(--dsw-radius-md,8px);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;outline:none}
+.cfui-pick-row:hover:not(:disabled),.cfui-pick-row:focus-visible{background:var(--dsw-alias-interactive-bg-hover,rgba(0,0,0,.04))}
+.cfui-pick-row:disabled{color:var(--dsw-alias-label-dimmed,#b3b7bd);cursor:default}
+.cfui-pick-row[data-selected=true]{background:transparent}
+.cfui-pick-row-main{display:flex;flex:1;flex-direction:column;min-width:0;gap:1px}
+.cfui-pick-name{overflow:hidden;color:inherit;font-size:13px;line-height:18px;font-weight:400;text-overflow:ellipsis;white-space:nowrap}
+.cfui-pick-desc{overflow:hidden;color:var(--dsw-alias-label-tertiary,#8a919c);font-size:11px;line-height:16px;text-overflow:ellipsis;white-space:nowrap}
+.cfui-pick-row[data-selected=true] .cfui-pick-name{font-weight:500}
+.cfui-pick-mark{display:grid;place-items:center;flex:0 0 14px;width:14px;height:14px;color:var(--dsw-alias-label-primary,#1f2329)}
+.cfui-pick-status{flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-tertiary,#8a919c)}
+.cfui-pick-status[data-state=connected]{background:var(--dsw-alias-state-success-primary,#2aa866)}
+.cfui-pick-status[data-state=connecting],.cfui-pick-status[data-state=reconnecting],.cfui-pick-status[data-state=waiting]{background:var(--dsw-alias-state-warn-primary,#b87700)}
+.cfui-pick-status[data-state=failed]{background:var(--dsw-alias-state-error-primary,#d93026)}
+.cfui-pick-status[data-state=disabled],.cfui-pick-status[data-state=closed],.cfui-pick-status[data-state=unknown]{background:var(--dsw-alias-label-caption,#8a919c);opacity:.55}
+.cfui-pick-action{flex:none;padding:2px 4px;border:0;border-radius:5px;background:transparent;color:var(--dsw-alias-label-link,var(--dsw-alias-state-business-primary,#2f6bff));font:inherit;font-size:11px;line-height:16px;cursor:pointer}
+.cfui-pick-action:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(0,0,0,.04))}
+.cfui-pick-statusline{display:flex;align-items:center;gap:6px;padding:10px;color:var(--dsw-alias-label-tertiary,#8a919c);font-size:12px;line-height:18px}
+.cfui-pick-empty{display:flex;flex-direction:column;gap:3px;padding:12px 10px;color:var(--dsw-alias-label-tertiary,#8a919c);font-size:12px;line-height:18px}
+.cfui-pick-empty b{color:var(--dsw-alias-label-secondary,#61666d);font-weight:500}
+.cfui-pick-error{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin:2px;padding:7px 8px;border-radius:var(--dsw-radius-md,8px);background:var(--dsw-alias-interactive-bg-hover-danger,rgba(217,48,38,.08));color:var(--dsw-alias-state-error-primary,#d93026);font-size:11px;line-height:16px}
+.cfui-pick-error button{flex:none;padding:0;border:0;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer}
+.cfui-pick-sep{flex:none;height:1px;margin:3px 6px;background:var(--dsw-alias-border-l1,rgba(0,0,0,.08))}
+.cfui-pick-clear{display:flex;align-items:center;gap:6px;width:100%;min-height:30px;padding:4px 8px;border:0;border-radius:var(--dsw-radius-md,8px);background:transparent;color:var(--dsw-alias-label-tertiary,#8a919c);font:inherit;font-size:12px;line-height:18px;text-align:left;cursor:pointer}
+.cfui-pick-clear:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(0,0,0,.04));color:var(--dsw-alias-label-secondary,#61666d)}
+.cfui-pick-clear svg{width:12px;height:12px}
+@keyframes cfui-pick-pulse{0%,100%{opacity:.45}50%{opacity:1}}
+.cfui-pick-status[data-state=connecting],.cfui-pick-status[data-state=reconnecting]{animation:cfui-pick-pulse 1.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.cfui-pick-status{animation:none!important}}
+@media (max-width:1040px){.cfui-pick-trigger{max-width:132px}.cfui-pick-label{max-width:64px}}
+@media (max-width:820px){.cfui-pick-trigger{max-width:34px;padding:0 5px}.cfui-pick-label{display:none}}
+`
+
+  function usePickerStyle() {
+    React.useEffect(() => {
+      if (typeof document === 'undefined') return undefined
+      if (styleNode === null || !styleNode.isConnected) {
+        styleNode = document.querySelector('style[' + STYLE_ATTR + ']')
+      }
+      if (styleNode === null) {
+        styleNode = document.createElement('style')
+        styleNode.setAttribute(STYLE_ATTR, '')
+        styleNode.textContent = CSS
+        document.head.appendChild(styleNode)
+      }
+      styleRefs += 1
+      return () => {
+        styleRefs -= 1
+        if (styleRefs > 0) return
+        styleRefs = 0
+        if (styleNode !== null && styleNode.parentNode !== null) styleNode.parentNode.removeChild(styleNode)
+        styleNode = null
+      }
+    }, [])
+  }
+
+  const ICON_SKILL = h('svg', {
+    viewBox: '0 0 24 24', width: 16, height: 16, fill: 'none', stroke: 'currentColor',
+    strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': 'true',
+  },
+    h('g', { transform: 'rotate(-40 12 12)' },
+      h('rect', { x: 4, y: 5, width: 16, height: 5.2, rx: 1.5 }),
+      h('path', { d: 'M12 10.2v12.2' }),
+      h('path', { d: 'M9.2 22.4h5.6' }),
+    ),
+  )
+
+  const ICON_MCP = h('svg', {
+    viewBox: '0 0 24 24', width: 16, height: 16, fill: 'none', stroke: 'currentColor',
+    strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': 'true',
+  },
+    h('g', { transform: 'rotate(-45 12 12)' },
+      h('path', { d: 'M8 12h8' }),
+      h('path', { d: 'M8 6.6H6.2a5.4 5.4 0 0 0 0 10.8H8' }),
+      h('path', { d: 'M16 6.6h1.8a5.4 5.4 0 0 1 0 10.8H16' }),
+    ),
+  )
+
+  const ICON_CHECK = h('svg', {
+    viewBox: '0 0 16 16', width: 14, height: 14, fill: 'none', stroke: 'currentColor',
+    strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': 'true',
+  }, h('path', { d: 'm3.2 8.4 3.1 3.1 6.5-6.7' }))
+
+  const ICON_SEARCH = h('svg', {
+    viewBox: '0 0 16 16', width: 12, height: 12, fill: 'none', stroke: 'currentColor',
+    strokeWidth: 1.5, strokeLinecap: 'round', 'aria-hidden': 'true',
+  }, h('circle', { cx: 7, cy: 7, r: 4.2 }), h('path', { d: 'm10.2 10.2 3 3' }))
+
+  const ICON_X = h('svg', {
+    viewBox: '0 0 16 16', width: 12, height: 12, fill: 'none', stroke: 'currentColor',
+    strokeWidth: 1.5, strokeLinecap: 'round', 'aria-hidden': 'true',
+  }, h('path', { d: 'm4 4 8 8M12 4l-8 8' }))
+
+  function Trigger(props) {
+    const { icon, label, active, tone, open, disabled, title, ariaLabel, onClick } = props
+    return h('button', {
+      type: 'button',
+      className: 'cfui-pick-trigger',
+      'data-active': active ? 'true' : 'false',
+      'data-tone': tone ?? undefined,
+      'aria-haspopup': 'menu',
+      'aria-expanded': open ? 'true' : 'false',
+      'aria-label': ariaLabel,
+      title,
+      disabled,
+      onClick,
+      onMouseDown: (event) => { event.preventDefault() },
+    },
+      h('span', { className: 'cfui-pick-icon', 'aria-hidden': 'true' }, icon),
+      active && label ? h('span', { className: 'cfui-pick-label' }, label) : null,
+      active ? h('span', { className: 'cfui-pick-dot', 'aria-hidden': 'true' }) : null,
+    )
+  }
+
+  function Menu(props) {
+    const { open, anchorRef, onClose, title, aside, children, initialFocus, ariaLabel } = props
+    const menuRef = React.useRef(null)
+    const [position, setPosition] = React.useState(null)
+
+    React.useLayoutEffect(() => {
+      if (!open) return undefined
+      const measure = () => {
+        const anchor = anchorRef.current
+        if (anchor === null) return
+        const rect = anchor.getBoundingClientRect()
+        const width = Math.min(320, window.innerWidth - 24)
+        const right = Math.max(12, Math.min(window.innerWidth - rect.right, window.innerWidth - width - 12))
+        const bottom = Math.max(12, window.innerHeight - rect.top + 8)
+        setPosition({ right, bottom, maxHeight: Math.max(160, Math.min(380, rect.top - 20)) })
+      }
+      measure()
+      window.addEventListener('resize', measure)
+      window.addEventListener('scroll', measure, true)
+      return () => {
+        window.removeEventListener('resize', measure)
+        window.removeEventListener('scroll', measure, true)
+      }
+    }, [open, anchorRef])
+
+    React.useEffect(() => {
+      if (!open) return undefined
+      const onPointer = (event) => {
+        const target = event.target
+        if (menuRef.current?.contains(target)) return
+        if (anchorRef.current?.contains(target)) return
+        onClose(false)
+      }
+      document.addEventListener('mousedown', onPointer, true)
+      return () => document.removeEventListener('mousedown', onPointer, true)
+    }, [open, onClose, anchorRef])
+
+    React.useEffect(() => {
+      if (!open || initialFocus === false) return
+      const frame = window.requestAnimationFrame(() => {
+        const node = menuRef.current
+        if (node === null) return
+        const first = node.querySelector('input, button:not([disabled])')
+        first?.focus({ preventScroll: true })
+      })
+      return () => window.cancelAnimationFrame(frame)
+    }, [open, initialFocus])
+
+    if (!open || position === null) return null
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        onClose(true)
+        return
+      }
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+      const node = menuRef.current
+      if (node === null) return
+      const items = [...node.querySelectorAll('input, button:not([disabled])')]
+      if (items.length === 0) return
+      event.preventDefault()
+      const active = items.indexOf(document.activeElement)
+      const direction = event.key === 'ArrowDown' ? 1 : -1
+      const next = active === -1 ? (direction > 0 ? 0 : items.length - 1) : (active + direction + items.length) % items.length
+      items[next].focus()
+    }
+
+    return createPortal(h('div', {
+      ref: menuRef,
+      className: 'cfui-pick-menu',
+      role: 'menu',
+      'aria-label': ariaLabel ?? title,
+      style: position,
+      onKeyDown,
+    },
+      title ? h('div', { className: 'cfui-pick-head' },
+        h('span', null, title),
+        aside ?? null,
+      ) : null,
+      children,
+    ), document.body)
+  }
+
+  function ClearRow(props) {
+    return h('button', { type: 'button', className: 'cfui-pick-clear', onClick: props.onClick },
+      h('span', { 'aria-hidden': 'true' }, ICON_X),
+      h('span', null, props.label),
+    )
+  }
+
+  function ErrorStrip(props) {
+    return h('div', { className: 'cfui-pick-error' },
+      h('span', null, props.message),
+      props.onRetry ? h('button', { type: 'button', onClick: props.onRetry }, props.retryLabel) : null,
+    )
+  }
+
+  function StatusLine(props) {
+    return h('div', { className: 'cfui-pick-statusline', role: 'status' }, props.children)
+  }
+
+  function readString(key) {
+    try {
+      return window.localStorage.getItem(key)
+    } catch {
+      return null
+    }
+  }
+
+  function writeString(key, value) {
+    try {
+      if (value === null || value === undefined || value === '') window.localStorage.removeItem(key)
+      else window.localStorage.setItem(key, String(value))
+    } catch {
+      // Private browsing can refuse storage; the in-memory state still works.
+    }
+  }
+
+  /** Case-insensitive ordered subsequence match, prefix hits first. */
+  function rankByName(items, query) {
+    const needle = query.trim().toLowerCase()
+    if (needle === '') return items.slice()
+    const ranked = []
+    for (const [index, item] of items.entries()) {
+      const name = String(item.name ?? '').toLowerCase()
+      if (name === needle) { ranked.push({ index, score: 0, item }); continue }
+      if (name.startsWith(needle)) { ranked.push({ index, score: 1, item }); continue }
+      let at = 0
+      let matched = true
+      for (const char of needle) {
+        at = name.indexOf(char, at)
+        if (at < 0) { matched = false; break }
+        at += 1
+      }
+      if (matched) ranked.push({ index, score: 2 + (at - needle.length) / Math.max(1, name.length), item })
+    }
+    ranked.sort((left, right) => left.score - right.score || left.index - right.index)
+    return ranked.map(entry => entry.item)
+  }
+
+  return {
+    React,
+    h,
+    createPortal,
+    usePickerStyle,
+    Trigger,
+    Menu,
+    ClearRow,
+    ErrorStrip,
+    StatusLine,
+    ICONS: { skill: ICON_SKILL, mcp: ICON_MCP, check: ICON_CHECK, search: ICON_SEARCH, close: ICON_X },
+    readString,
+    writeString,
+    rankByName,
+  }
+}
+
+/**
+ * Skill picker for the composer tool row.
+ *
+ * Selecting a skill writes the official `/name ` invocation into the draft:
+ * the Host's pre-step boundary injects that skill's instructions when the
+ * message is sent, so the conversation genuinely uses the picked skill. The
+ * trigger only lights up while the token is still in the draft.
+ */
+function createSkillPicker(require, kit) {
+  const { React, h, usePickerStyle, Trigger, Menu, ClearRow, ErrorStrip, StatusLine, ICONS, readString, writeString, rankByName } = kit
+
+  const TOKEN = /(^|\s)\/([a-z0-9]+(?:-[a-z0-9]+)*)(?=\s|$)/
+
+  function skillToken(draft) {
+    const match = TOKEN.exec(draft)
+    return match === null ? null : match[2]
+  }
+
+  function hasToken(draft, name) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\    // __MODULE_FUNCTIONS__')
+    return new RegExp('(^|\\s)/' + escaped + '(?=\\s|$)').test(draft)
+  }
+
+  function withSkill(draft, name, known) {
+    if (hasToken(draft, name)) return draft
+    const current = skillToken(draft)
+    if (current !== null && known.has(current)) {
+      const at = draft.indexOf('/' + current)
+      if (at >= 0) {
+        return draft.slice(0, at) + '/' + name + ' ' + draft.slice(at + current.length + 1).replace(/^\s+/, '')
+      }
+    }
+    if (draft.trim() === '') return '/' + name + ' '
+    return '/' + name + ' ' + draft.replace(/^\s+/, '')
+  }
+
+  function withoutSkill(draft, name) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\    // __MODULE_FUNCTIONS__')
+    const match = new RegExp('(^|\\s)(/' + escaped + ')(?=\\s|$)').exec(draft)
+    if (match === null) return draft
+    const at = match.index + match[1].length
+    const before = draft.slice(0, at).replace(/\s+$/, '')
+    const after = draft.slice(at + match[2].length).replace(/^\s+/, '')
+    if (before === '') return after
+    if (after === '') return before
+    return before + ' ' + after
+  }
+
+  function SkillPicker(props) {
+    const { sessionId, useInput, inputActions, t, loadSkills, readSelection, writeSelection } = props
+    usePickerStyle()
+    const input = useInput(state => state)
+    const [open, setOpen] = React.useState(false)
+    const [skills, setSkills] = React.useState([])
+    const [status, setStatus] = React.useState('idle')
+    const [error, setError] = React.useState(null)
+    const [query, setQuery] = React.useState('')
+    const [selected, setSelected] = React.useState(() => readSelection(sessionId))
+    const anchorRef = React.useRef(null)
+    const requestRef = React.useRef(0)
+
+    const draft = input?.draft ?? ''
+    const token = skillToken(draft)
+    const known = React.useMemo(() => new Set(skills.map(skill => skill.name)), [skills])
+    const activeName = token !== null && (known.has(token) || token === selected) ? token : null
+    const busy = input === undefined || input.phase !== 'plain'
+    const triggerDisabled = busy || typeof inputActions?.setDraft !== 'function'
+
+    React.useEffect(() => {
+      setSkills([])
+      setStatus('idle')
+      setError(null)
+      setQuery('')
+      setSelected(readSelection(sessionId))
+    }, [sessionId])
+
+    const load = React.useCallback(() => {
+      if (typeof loadSkills !== 'function') {
+        setStatus('error')
+        setError(t('composer.skill.unavailable'))
+        return
+      }
+      const request = requestRef.current + 1
+      requestRef.current = request
+      setStatus('loading')
+      setError(null)
+      Promise.resolve()
+        .then(() => loadSkills())
+        .then((result) => {
+          if (request !== requestRef.current) return
+          if (result !== null && typeof result === 'object' && result.ok === false) {
+            throw new Error(result.error?.message ?? 'skills/list failed')
+          }
+          const list = result?.value?.skills
+          setSkills(Array.isArray(list) ? list : [])
+          setStatus('ready')
+        })
+        .catch((failure) => {
+          if (request !== requestRef.current) return
+          setStatus('error')
+          setError(failure?.message ?? String(failure))
+        })
+    }, [loadSkills, t])
+
+    const show = () => {
+      if (triggerDisabled) return
+      if (status === 'idle' || status === 'error') load()
+      setQuery('')
+      setOpen(true)
+    }
+
+    const close = (restoreFocus) => {
+      setOpen(false)
+      if (restoreFocus) window.requestAnimationFrame(() => anchorRef.current?.querySelector('button')?.focus({ preventScroll: true }))
+    }
+
+    const choose = (skill) => {
+      if (typeof inputActions?.setDraft !== 'function') return
+      const next = withSkill(draft, skill.name, known)
+      if (next !== draft) inputActions.setDraft(next)
+      setSelected(skill.name)
+      writeSelection(sessionId, skill.name)
+      close(false)
+    }
+
+    const clear = () => {
+      if (typeof inputActions?.setDraft !== 'function') return
+      const name = activeName ?? selected
+      if (name !== null && name !== undefined) {
+        const next = withoutSkill(draft, name)
+        if (next !== draft) inputActions.setDraft(next)
+      }
+      setSelected(null)
+      writeSelection(sessionId, null)
+      close(false)
+    }
+
+    const title = t('composer.skill.title')
+    const active = activeName !== null
+    const ariaLabel = active
+      ? t('composer.skill.aria', { name: activeName })
+      : t('composer.skill.select')
+    const filtered = query.trim() === '' ? skills : rankByName(skills, query)
+    const showSearch = skills.length > 6
+
+    return h('div', { className: 'cfui-pick', ref: anchorRef },
+      h(Trigger, {
+        icon: ICONS.skill,
+        label: active ? activeName : null,
+        active,
+        open,
+        disabled: triggerDisabled,
+        title: active ? t('composer.skill.active', { name: activeName }) : t('composer.skill.select'),
+        ariaLabel,
+        onClick: () => { open ? close(true) : show() },
+      }),
+      h(Menu, {
+        open,
+        anchorRef,
+        onClose: close,
+        title,
+        aside: status === 'ready' ? h('b', null, String(skills.length)) : null,
+        ariaLabel: title,
+        initialFocus: showSearch,
+      },
+        showSearch ? h('div', { className: 'cfui-pick-search' },
+          h('input', {
+            type: 'text',
+            role: 'searchbox',
+            value: query,
+            placeholder: t('composer.skill.search'),
+            'aria-label': t('composer.skill.search'),
+            onChange: event => setQuery(event.target.value),
+          }),
+          h('span', { className: 'cfui-pick-search-icon', 'aria-hidden': 'true' }, ICONS.search),
+        ) : null,
+        status === 'loading' ? h(StatusLine, null, t('composer.skill.loading')) : null,
+        status === 'error' ? h(ErrorStrip, {
+          message: t('composer.skill.error') + (error ? '：' + error : ''),
+          retryLabel: t('composer.skill.retry'),
+          onRetry: load,
+        }) : null,
+        status === 'ready' && filtered.length === 0
+          ? h('div', { className: 'cfui-pick-empty' }, h('b', null, t('composer.skill.empty')), h('span', null, t('composer.skill.emptyHint')))
+          : null,
+        status === 'ready' && filtered.length > 0
+          ? h('div', { className: 'cfui-pick-list', role: 'group' },
+            filtered.map(skill => h('button', {
+              key: skill.name,
+              type: 'button',
+              role: 'menuitemradio',
+              'aria-checked': activeName === skill.name ? 'true' : 'false',
+              className: 'cfui-pick-row',
+              'data-selected': activeName === skill.name ? 'true' : 'false',
+              title: '/' + skill.name,
+              onClick: () => choose(skill),
+            },
+              h('span', { className: 'cfui-pick-row-main' },
+                h('span', { className: 'cfui-pick-name' }, '/' + skill.name),
+                h('span', { className: 'cfui-pick-desc' }, skill.description || (skill.modelInvocable ? '' : t('composer.skill.userOnly'))),
+              ),
+              skill.modelInvocable ? null : h('span', { className: 'cfui-pick-desc' }, t('composer.skill.userOnly')),
+              h('span', { className: 'cfui-pick-mark', 'aria-hidden': 'true' }, activeName === skill.name ? ICONS.check : null),
+            )),
+          ) : null,
+        active || selected !== null ? h(React.Fragment, null,
+          h('div', { className: 'cfui-pick-sep', 'aria-hidden': 'true' }),
+          h(ClearRow, { label: t('composer.skill.clear'), onClick: clear }),
+        ) : null,
+      ),
+    )
+  }
+
+  /**
+   * Register the picker into the composer's compact control row.
+   * @param ctx - client root context.
+   * @param hooks - optional `{ track(slot, callback, dispose) }` used by the
+   *   shell to remove the registration when the feature switch is off.
+   */
+  function applySkillPicker(ctx, hooks, resolveSkills) {
+    const mount = (slot, callback) => {
+      const dispose = ctx.slots.inject(slot, callback)
+      if (hooks && typeof hooks.track === 'function') hooks.track(slot, callback, dispose)
+      return dispose
+    }
+    mount('conversation.input.right', () => ctx.slots.register({
+      name: 'conversation.input.right',
+      id: 'cfui-skill',
+      order: 20,
+      locale: 'clientFrontUi',
+      inject: (sessionId) => ({
+        sessionId,
+        loadSkills: () => {
+          const remote = typeof resolveSkills === 'function' ? resolveSkills() : undefined
+          if (!remote || typeof remote.list !== 'function') throw new Error('skills remote is unavailable')
+          return remote.list({ sessionId })
+        },
+        readSelection: id => readString('cfui.skill.v1.' + id),
+        writeSelection: (id, name) => writeString('cfui.skill.v1.' + id, name),
+      }),
+    }, SkillPicker))
+  }
+
+  return { applySkillPicker, SkillPicker }
+}
+
+/**
+ * MCP server picker for the composer tool row.
+ *
+ * MCP servers are a Host-scoped fleet: every connected server already exposes
+ * its tools to the conversation. This picker surfaces that fleet in the
+ * composer, keeps one server marked as the session's focus, and lets a failed
+ * server be reconnected in place. Selection is presentation state, not a tool
+ * permission change.
+ */
+function createMcpPicker(require, kit) {
+  const { React, h, usePickerStyle, Trigger, Menu, ClearRow, ErrorStrip, StatusLine, ICONS, readString, writeString } = kit
+
+  /** Plugin-owned observable over the Host's MCP watch stream. */
+  function createMcpStore(ctx, resolveManager) {
+    let snapshot = { status: 'idle', servers: [], error: null }
+    const listeners = new Set()
+    let controller = null
+    let running = false
+
+    const manager = () => (typeof resolveManager === 'function' ? resolveManager() : undefined)
+
+    const emit = () => {
+      for (const listener of [...listeners]) {
+        try { listener() } catch { /* one bad consumer must not starve the others */ }
+      }
+    }
+    const set = (next) => {
+      snapshot = next
+      emit()
+    }
+    const start = () => {
+      if (running || controller !== null) return
+      const remote = manager()
+      if (!remote || typeof remote.watch !== 'function') {
+        set({ status: 'unavailable', servers: [], error: null })
+        return
+      }
+      running = true
+      controller = new AbortController()
+      const active = controller
+      ;(async () => {
+        try {
+          for await (const servers of remote.watch(active.signal)) {
+            if (active.signal.aborted) break
+            set({ status: 'ready', servers: Array.isArray(servers) ? servers : [], error: null })
+          }
+        } catch (failure) {
+          if (!active.signal.aborted) {
+            set({ status: 'error', servers: snapshot.servers, error: failure?.message ?? String(failure) })
+          }
+        } finally {
+          if (controller === active) {
+            controller = null
+            running = false
+          }
+        }
+      })()
+    }
+    const stop = () => {
+      if (controller !== null) controller.abort()
+      controller = null
+      running = false
+    }
+
+    return {
+      getSnapshot: () => snapshot,
+      subscribe(listener) {
+        listeners.add(listener)
+        if (listeners.size === 1) start()
+        return () => {
+          listeners.delete(listener)
+          if (listeners.size === 0) stop()
+        }
+      },
+      restart(name) {
+        const remote = manager()
+        if (!remote || typeof remote.restart !== 'function') return Promise.reject(new Error('MCP manager is unavailable'))
+        return remote.restart(name)
+      },
+      refresh() {
+        stop()
+        set({ status: 'idle', servers: snapshot.servers, error: null })
+        if (listeners.size > 0) start()
+      },
+    }
+  }
+
+  function stateOf(server) {
+    return server?.status?.state ?? 'unknown'
+  }
+
+  function statusLabel(server, t) {
+    const status = server?.status ?? {}
+    switch (status.state) {
+      case 'connected': return t('composer.mcp.connected', { count: status.toolCount ?? 0 })
+      case 'connecting': return t('composer.mcp.connecting')
+      case 'reconnecting': return t('composer.mcp.reconnecting', { attempt: status.attempt ?? 0, max: status.maxAttempts ?? 0 })
+      case 'failed': return t('composer.mcp.failed')
+      case 'disabled': return t('composer.mcp.disabled')
+      case 'closed': return t('composer.mcp.closed')
+      case 'waiting-credentials': return t('composer.mcp.waiting')
+      default: return t('composer.mcp.unknown')
+    }
+  }
+
+  function toneOf(server) {
+    switch (stateOf(server)) {
+      case 'connected': return undefined
+      case 'connecting':
+      case 'reconnecting':
+      case 'waiting-credentials': return 'warn'
+      case 'failed': return 'error'
+      default: return 'muted'
+    }
+  }
+
+  function McpPicker(props) {
+    const { sessionId, t, useMcpServers, readSelection, writeSelection, restartServer, refreshServers } = props
+    usePickerStyle()
+    const state = useMcpServers(snapshot => snapshot)
+    const [open, setOpen] = React.useState(false)
+    const [selected, setSelected] = React.useState(() => readSelection(sessionId))
+    const [actionError, setActionError] = React.useState(null)
+    const anchorRef = React.useRef(null)
+
+    React.useEffect(() => {
+      setSelected(readSelection(sessionId))
+      setActionError(null)
+    }, [sessionId])
+
+    const servers = (state?.servers ?? []).filter(server => server.configured !== false)
+    const selectedServer = selected === null ? undefined : servers.find(server => server.name === selected)
+    const title = t('composer.mcp.title')
+    const active = selected !== null && selected !== undefined && selected !== ''
+    const status = state?.status ?? 'idle'
+
+    const close = (restoreFocus) => {
+      setOpen(false)
+      if (restoreFocus) window.requestAnimationFrame(() => anchorRef.current?.querySelector('button')?.focus({ preventScroll: true }))
+    }
+
+    const choose = (server) => {
+      setSelected(server.name)
+      writeSelection(sessionId, server.name)
+      setActionError(null)
+      close(false)
+      if (stateOf(server) === 'failed' && typeof restartServer === 'function') {
+        Promise.resolve(restartServer(server.name)).catch((failure) => {
+          setActionError(failure?.message ?? String(failure))
+        })
+      }
+    }
+
+    const clear = () => {
+      setSelected(null)
+      writeSelection(sessionId, null)
+      setActionError(null)
+      close(false)
+    }
+
+    return h('div', { className: 'cfui-pick', ref: anchorRef },
+      h(Trigger, {
+        icon: ICONS.mcp,
+        label: active ? selected : null,
+        active,
+        tone: selectedServer ? toneOf(selectedServer) : 'muted',
+        open,
+        title: active ? t('composer.mcp.active', { name: selected }) : t('composer.mcp.select'),
+        ariaLabel: active ? t('composer.mcp.aria', { name: selected }) : t('composer.mcp.select'),
+        onClick: () => { open ? close(true) : setOpen(true) },
+      }),
+      h(Menu, {
+        open,
+        anchorRef,
+        onClose: close,
+        title,
+        aside: status === 'ready' ? h('b', null, String(servers.length)) : null,
+        ariaLabel: title,
+      },
+        status === 'loading' || status === 'idle' ? h(StatusLine, null, t('composer.mcp.loading')) : null,
+        status === 'unavailable' ? h('div', { className: 'cfui-pick-empty' },
+          h('b', null, t('composer.mcp.unavailable')),
+          h('span', null, t('composer.mcp.unavailableHint')),
+        ) : null,
+        status === 'error' ? h(ErrorStrip, {
+          message: t('composer.mcp.error') + (state.error ? '：' + state.error : ''),
+          retryLabel: t('composer.mcp.retry'),
+          onRetry: refreshServers,
+        }) : null,
+        actionError !== null ? h(ErrorStrip, { message: actionError }) : null,
+        status === 'ready' && servers.length === 0
+          ? h('div', { className: 'cfui-pick-empty' },
+            h('b', null, t('composer.mcp.empty')),
+            h('span', null, t('composer.mcp.emptyHint')),
+          )
+          : null,
+        servers.length > 0
+          ? h('div', { className: 'cfui-pick-list', role: 'group' },
+            servers.map(server => h('button', {
+              key: server.name,
+              type: 'button',
+              role: 'menuitemradio',
+              'aria-checked': selected === server.name ? 'true' : 'false',
+              className: 'cfui-pick-row',
+              'data-selected': selected === server.name ? 'true' : 'false',
+              title: server.name,
+              onClick: () => choose(server),
+            },
+              h('span', { className: 'cfui-pick-status', 'data-state': stateOf(server), 'aria-hidden': 'true' }),
+              h('span', { className: 'cfui-pick-row-main' },
+                h('span', { className: 'cfui-pick-name' }, server.name),
+                h('span', { className: 'cfui-pick-desc' }, statusLabel(server, t)),
+              ),
+              selected === server.name ? h('span', { className: 'cfui-pick-mark', 'aria-hidden': 'true' }, ICONS.check) : null,
+            )),
+          ) : null,
+        active ? h(React.Fragment, null,
+          h('div', { className: 'cfui-pick-sep', 'aria-hidden': 'true' }),
+          h(ClearRow, { label: t('composer.mcp.clear'), onClick: clear }),
+        ) : null,
+      ),
+    )
+  }
+
+  function applyMcpPicker(ctx, hooks, store) {
+    const mount = (slot, callback) => {
+      const dispose = ctx.slots.inject(slot, callback)
+      if (hooks && typeof hooks.track === 'function') hooks.track(slot, callback, dispose)
+      return dispose
+    }
+    mount('conversation.input.right', () => ctx.slots.register({
+      name: 'conversation.input.right',
+      id: 'cfui-mcp',
+      order: 21,
+      locale: 'clientFrontUi',
+      inject: (sessionId) => ({
+        sessionId,
+        hooks: { mcpServers: store },
+        readSelection: id => readString('cfui.mcp.v1.' + id),
+        writeSelection: (id, name) => writeString('cfui.mcp.v1.' + id, name),
+        restartServer: name => store.restart(name),
+        refreshServers: () => store.refresh(),
+      }),
+    }, McpPicker))
+  }
+
+  return { applyMcpPicker, McpPicker, createMcpStore }
+}
+
     const React = require('react')
     const h = React.createElement
 
@@ -4367,6 +5178,39 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       'module.other.title': '其他 UI 组件优化',
       'other.anchor.title': '对话轮次导航条美化',
       'other.composer.title': '对话框优化',
+      'composer.skill.title': '选择技能',
+      'composer.skill.select': '选择技能',
+      'composer.skill.active': '当前技能：{name}',
+      'composer.skill.aria': '选择技能，当前：{name}',
+      'composer.skill.search': '搜索技能',
+      'composer.skill.loading': '正在加载技能…',
+      'composer.skill.error': '技能加载失败',
+      'composer.skill.retry': '重试',
+      'composer.skill.empty': '暂无可用技能',
+      'composer.skill.emptyHint': '安装带技能的插件后，可在这里直接选用。',
+      'composer.skill.clear': '不使用技能',
+      'composer.skill.unavailable': '当前部署没有提供技能目录。',
+      'composer.skill.userOnly': '仅手动调用',
+      'composer.mcp.title': 'MCP 服务器',
+      'composer.mcp.select': '选择 MCP 服务器',
+      'composer.mcp.aria': '选择 MCP 服务器，当前：{name}',
+      'composer.mcp.active': '当前 MCP：{name}',
+      'composer.mcp.loading': '正在读取 MCP 服务器…',
+      'composer.mcp.error': 'MCP 服务器读取失败',
+      'composer.mcp.retry': '重试',
+      'composer.mcp.empty': '暂无 MCP 服务器',
+      'composer.mcp.emptyHint': '在设置中配置 MCP 服务器后，可在这里查看连接状态。',
+      'composer.mcp.unavailable': '当前部署未启用 MCP 管理器',
+      'composer.mcp.unavailableHint': '安装并启用 MCP 管理器后，这里会列出服务器。',
+      'composer.mcp.clear': '不使用 MCP',
+      'composer.mcp.connected': '已连接 · {count} 个工具',
+      'composer.mcp.connecting': '连接中…',
+      'composer.mcp.reconnecting': '重连中 · {attempt}/{max}',
+      'composer.mcp.failed': '连接失败 · 点击重试并选用',
+      'composer.mcp.disabled': '已停用',
+      'composer.mcp.closed': '未连接',
+      'composer.mcp.waiting': '等待凭据',
+      'composer.mcp.unknown': '状态未知',
       'module.expand': '展开',
       'module.collapse': '收起',
       'module.enabled': '已启用',
@@ -4390,6 +5234,39 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       'module.other.title': 'Other UI enhancements',
       'other.anchor.title': 'Turn navigation polish',
       'other.composer.title': 'Composer polish',
+      'composer.skill.title': 'Choose a skill',
+      'composer.skill.select': 'Choose a skill',
+      'composer.skill.active': 'Active skill: {name}',
+      'composer.skill.aria': 'Choose a skill, active: {name}',
+      'composer.skill.search': 'Search skills',
+      'composer.skill.loading': 'Loading skills…',
+      'composer.skill.error': 'Could not load skills',
+      'composer.skill.retry': 'Retry',
+      'composer.skill.empty': 'No skills available',
+      'composer.skill.emptyHint': 'Install a plugin that ships skills to pick one here.',
+      'composer.skill.clear': 'Clear skill',
+      'composer.skill.unavailable': 'This deployment has no skill catalog.',
+      'composer.skill.userOnly': 'Manual only',
+      'composer.mcp.title': 'MCP servers',
+      'composer.mcp.select': 'Choose an MCP server',
+      'composer.mcp.aria': 'Choose an MCP server, active: {name}',
+      'composer.mcp.active': 'Active MCP: {name}',
+      'composer.mcp.loading': 'Reading MCP servers…',
+      'composer.mcp.error': 'Could not read MCP servers',
+      'composer.mcp.retry': 'Retry',
+      'composer.mcp.empty': 'No MCP servers',
+      'composer.mcp.emptyHint': 'Configure MCP servers in Settings to see their status here.',
+      'composer.mcp.unavailable': 'MCP manager is not mounted',
+      'composer.mcp.unavailableHint': 'Install and enable the MCP manager to list servers here.',
+      'composer.mcp.clear': 'Clear MCP',
+      'composer.mcp.connected': 'Connected · {count} tools',
+      'composer.mcp.connecting': 'Connecting…',
+      'composer.mcp.reconnecting': 'Reconnecting · {attempt}/{max}',
+      'composer.mcp.failed': 'Connection failed · click to retry and use',
+      'composer.mcp.disabled': 'Disabled',
+      'composer.mcp.closed': 'Not connected',
+      'composer.mcp.waiting': 'Waiting for credentials',
+      'composer.mcp.unknown': 'Unknown state',
       'module.expand': 'Expand',
       'module.collapse': 'Collapse',
       'module.enabled': 'Enabled',
@@ -4476,7 +5353,10 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
         title: '0.5.0——2026-11-27 10:04',
         lines: [
           '插件边栏从模块降为「其他 UI 组件优化」下的功能',
-          '新增「对话框优化」：模型选择器改用图标',
+          '「对话框优化」：模型选择器改用脑图图标',
+          '「对话框优化」新增技能选择器：锤子图标，选择后把 /技能名 写入输入框',
+          '「对话框优化」新增 MCP 选择器：链接图标，读取 MCP 管理器，显示连接与工具状态',
+          '两个选择器沿用模型按钮的图标尺寸与线宽，选中后以图标、名称和小圆点低调提示',
         ],
       },
       {
@@ -4631,21 +5511,44 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
     }
 
     /**
-     * The one rail mark for the merged plugin: three sliders, the shared
-     * "adjust the interface" idea behind fonts, the sidebar and the rail.
+     * The one rail mark for the merged plugin: a browser window whose
+     * bottom-right corner opens into a small sparkle.
      */
     function PanelIcon(props) {
       const size = props && typeof props.size === 'number' ? props.size : 20
+      const spark = 'M0-1C0.08-0.28 0.28-0.08 1 0C0.28 0.08 0.08 0.28 0 1C-0.08 0.28-0.28 0.08-1 0C-0.28-0.08-0.08-0.28 0-1Z'
       return glyph(size, [
-        h('path', { key: 'a', d: 'M4 7.2h8.4' }),
-        h('path', { key: 'b', d: 'M16.4 7.2h3.6' }),
-        h('path', { key: 'c', d: 'M4 12h3.2' }),
-        h('path', { key: 'd', d: 'M11.2 12h8.8' }),
-        h('path', { key: 'e', d: 'M4 16.8h9.6' }),
-        h('path', { key: 'f', d: 'M17.6 16.8h2.4' }),
-        h('circle', { key: 'g', cx: 14.4, cy: 7.2, r: 2 }),
-        h('circle', { key: 'h', cx: 9.2, cy: 12, r: 2 }),
-        h('circle', { key: 'i', cx: 15.6, cy: 16.8, r: 2 }),
+        h('defs', { key: 'defs' },
+          h('mask', {
+            key: 'cut',
+            id: 'cfui-rail-cut',
+            maskUnits: 'userSpaceOnUse',
+            x: 0,
+            y: 0,
+            width: 24,
+            height: 24,
+          },
+            h('rect', { key: 'full', width: 24, height: 24, fill: '#FFFFFF', stroke: 'none' }),
+            h('path', {
+              key: 'gap',
+              d: spark,
+              transform: 'translate(19.2 18.4) scale(4.86)',
+              fill: '#000000',
+              stroke: 'none',
+            }),
+          ),
+        ),
+        h('g', { key: 'frame', mask: 'url(#cfui-rail-cut)' },
+          h('rect', { key: 'window', x: 3.2, y: 4.6, width: 16.2, height: 13.8, rx: 2.6 }),
+          h('path', { key: 'bar', d: 'M3.2 9.2h16.2' }),
+        ),
+        h('path', {
+          key: 'spark',
+          d: spark,
+          transform: 'translate(19.2 18.4) scale(3.35)',
+          fill: 'currentColor',
+          stroke: 'none',
+        }),
       ])
     }
 
@@ -4952,7 +5855,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
     const COMPOSER_STYLE_ATTR = 'data-cfui-composer-style'
 
     /** Original brain-and-circuit mark: model selection, not the product logo. */
-    const MODEL_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6C10.1 2.7 6.6 3.5 6 6.2c-2.3.2-3.4 2.9-2 4.7-1 2.1.7 4.4 3 4.2.5 2.1 3.3 2.9 5 1.5V4.6Z"/><path d="M12 4.6c1.9-1.9 5.4-1.1 6 1.6 2.3.2 3.4 2.9 2 4.7 1 2.1-.7 4.4-3 4.2-.5 2.1-3.3 2.9-5 1.5V4.6Z"/><circle cx="8" cy="9.1" r="1.3"/><circle cx="16.1" cy="8.1" r="1.3"/><circle cx="15.6" cy="15" r="1.3"/><path d="M9.3 9.1h1.2M14.8 8.6l-1.4 1M14.3 14.5l-1.1-.8"/></svg>`
+    const MODEL_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 3 3 0 0 1-3 4"/><path d="M12 18v-3"/></svg>`
     const MODEL_ICON_URL = `url("data:image/svg+xml,${encodeURIComponent(MODEL_ICON)}")`
 
     const COMPOSER_CSS = `
@@ -5169,6 +6072,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       'workspaces',
       'sessions',
       'shortcuts',
+      'remote',
     ]
 
     function apply(ctx) {
@@ -5183,8 +6087,18 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       const fontModule = createFontModule(require)
       const turnRail = createTurnRailPolish()
       const composerPolish = createComposerPolish()
+      const pickerKit = createPickerKit(require)
+      const skillPicker = createSkillPicker(require, pickerKit)
+      const mcpPicker = createMcpPicker(require, pickerKit)
+      let skillsRemote
+      let mcpRemote
+      // Optional namespaces: the pickers degrade to an explanatory empty state
+      // when their Host service is not mounted, without failing the whole bundle.
+      ctx.inject(['remote.skills'], (scope) => { skillsRemote = scope.remote.skills })
+      ctx.inject(['remote.mcpManager'], (scope) => { mcpRemote = scope.remote.mcpManager })
+      const mcpStore = mcpPicker.createMcpStore(ctx, () => mcpRemote)
 
-      const gates = { rail: [], sidebar: [] }
+      const gates = { rail: [], sidebar: [], composer: [] }
       let gating = false
       const track = (kind) => (slot, callback, dispose) => {
         if (gating) return
@@ -5194,6 +6108,8 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       railModule.apply(ctx, { track: track('rail') })
       sidebarModule.apply(ctx, { track: track('sidebar') })
       fontModule.apply(ctx)
+      skillPicker.applySkillPicker(ctx, { track: track('composer') }, () => skillsRemote)
+      mcpPicker.applyMcpPicker(ctx, { track: track('composer') }, mcpStore)
 
       /**
        * Add or remove one module's slot registrations. Both modules keep their
@@ -5239,6 +6155,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
         syncGate('sidebar', state.sidebar !== false)
         turnRail.setEnabled(otherOn && state.otherAnchor !== false)
         composerPolish.setEnabled(otherOn && state.otherComposer !== false)
+        syncGate('composer', otherOn && state.otherComposer !== false)
       }
 
       syncGates()
