@@ -4352,12 +4352,12 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
     const PANEL_ID = 'client-front-ui'
     const OPEN_KEY = 'cfui.modules.v1'
     const ENABLED_KEY = 'cfui.modules.enabled.v1'
-    const ENABLED_DEFAULTS = { font: true, sidebar: true, rail: true, other: true, otherAnchor: true }
+    const ENABLED_DEFAULTS = { font: true, sidebar: true, rail: true, other: true, otherRail: true, otherAnchor: true, otherComposer: true }
 
     const zh = {
       'panel': '客户端界面拓展',
       'title': '客户端界面拓展',
-      'intro': '字体、工作区、插件边栏与其他 UI 组件优化集中在这里；每个模块都可以收起或展开。',
+      'intro': '字体、工作区与其他 UI 组件优化集中在这里；每个模块都可以收起或展开。',
       'module.font.title': '字体控制',
       'module.font.desc': '为界面、代码与终端分别配置中文和西文字体，支持关键字搜索与一键恢复默认。',
       'module.sidebar.title': '工作区拓展',
@@ -4366,6 +4366,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       'module.rail.desc': '收纳工作区的插件 / 自动化功能 / dshLogo 等入口至左侧边栏，释放工作区更多垂直空间',
       'module.other.title': '其他 UI 组件优化',
       'other.anchor.title': '对话轮次导航条美化',
+      'other.composer.title': '对话框优化',
       'module.expand': '展开',
       'module.collapse': '收起',
       'module.enabled': '已启用',
@@ -4379,7 +4380,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
     const en = {
       'panel': 'Client Front UI',
       'title': 'Client Front UI',
-      'intro': 'Fonts, workspace, plugin rail and other UI polish in one place. Each module collapses and expands.',
+      'intro': 'Fonts, workspace and other UI polish in one place. Each module collapses and expands.',
       'module.font.title': 'Fonts',
       'module.font.desc': 'Pick Chinese and Latin typefaces for the interface, code, and terminal, with keyword search and one-click reset.',
       'module.sidebar.title': 'Workspace extension',
@@ -4388,6 +4389,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       'module.rail.desc': 'Tucks the plugin, automation and DSH logo entries into the left rail, freeing up vertical space in the workspace',
       'module.other.title': 'Other UI enhancements',
       'other.anchor.title': 'Turn navigation polish',
+      'other.composer.title': 'Composer polish',
       'module.expand': 'Expand',
       'module.collapse': 'Collapse',
       'module.enabled': 'Enabled',
@@ -4432,7 +4434,9 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 .cfui-mod-body .dswb-group{gap:0}
 .cfui-settings-head{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border:.5px solid var(--dsw-alias-border-l2,rgba(0,0,0,.12));border-bottom:0;border-radius:12px 12px 0 0;background:var(--dsw-alias-bg-layer-2,#f5f6f8);color:var(--dsw-alias-label-secondary,#61666d);font-size:12px;line-height:18px}
 .cfui-settings-head + .dswb-group .dswb-cards{border-radius:0 0 12px 12px}
-.cfui-feature-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border:.5px solid var(--dsw-alias-border-l2,rgba(0,0,0,.12));border-top:0;border-radius:0 0 12px 12px;background:var(--dsw-alias-bg-layer-1,#fff)}
+.cfui-feature-list{overflow:hidden;border:.5px solid var(--dsw-alias-border-l2,rgba(0,0,0,.12));border-top:0;border-radius:0 0 12px 12px;background:var(--dsw-alias-bg-layer-1,#fff)}
+.cfui-feature-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-bottom:.5px solid var(--dsw-alias-border-l1,rgba(0,0,0,.08));background:transparent}
+.cfui-feature-row:last-child{border-bottom:0}
 .cfui-feature-name{min-width:0;font-size:14px;font-weight:500;line-height:20px}
 .cfui-mod-body .dswb-group-title{display:none}
 .cfui-mod-body .dswb-cards{gap:0;border:.5px solid var(--dsw-alias-border-l2,rgba(0,0,0,.12));border-radius:12px;overflow:hidden;background:var(--dsw-alias-bg-layer-1,#fff)}
@@ -4467,6 +4471,14 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 `
 
     const CHANGELOG = [
+      {
+        time: '2026-11-27 10:04',
+        title: '0.5.0——2026-11-27 10:04',
+        lines: [
+          '插件边栏从模块降为「其他 UI 组件优化」下的功能',
+          '新增「对话框优化」：模型选择器改用图标',
+        ],
+      },
       {
         time: '2026-11-25 15:47',
         title: '0.4.0——2026-11-25 15:47',
@@ -4557,6 +4569,11 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
         if (stored === null || typeof stored !== 'object') return fallback
         for (const key of Object.keys(ENABLED_DEFAULTS)) {
           if (typeof stored[key] === 'boolean') fallback[key] = stored[key]
+        }
+        // The rail used to be its own module. Carry its old switch into the
+        // feature-level switch the first time the new shape is loaded.
+        if (typeof stored.otherRail !== 'boolean' && typeof stored.rail === 'boolean') {
+          fallback.otherRail = stored.rail
         }
       } catch (error) {
         // localStorage can be unavailable; the defaults stay in memory.
@@ -4929,6 +4946,121 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       }
     }
 
+    // ---------------------------------------------------------- composer polish
+
+    const MODEL_TRIGGER_ATTR = 'data-cfui-model-trigger'
+    const COMPOSER_STYLE_ATTR = 'data-cfui-composer-style'
+
+    /** Original brain-and-circuit mark: model selection, not the product logo. */
+    const MODEL_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6C10.1 2.7 6.6 3.5 6 6.2c-2.3.2-3.4 2.9-2 4.7-1 2.1.7 4.4 3 4.2.5 2.1 3.3 2.9 5 1.5V4.6Z"/><path d="M12 4.6c1.9-1.9 5.4-1.1 6 1.6 2.3.2 3.4 2.9 2 4.7 1 2.1-.7 4.4-3 4.2-.5 2.1-3.3 2.9-5 1.5V4.6Z"/><circle cx="8" cy="9.1" r="1.3"/><circle cx="16.1" cy="8.1" r="1.3"/><circle cx="15.6" cy="15" r="1.3"/><path d="M9.3 9.1h1.2M14.8 8.6l-1.4 1M14.3 14.5l-1.1-.8"/></svg>`
+    const MODEL_ICON_URL = `url("data:image/svg+xml,${encodeURIComponent(MODEL_ICON)}")`
+
+    const COMPOSER_CSS = `
+[${MODEL_TRIGGER_ATTR}]{gap:0;padding:0;width:28px;min-width:28px;height:28px;flex:none;justify-content:center}
+[${MODEL_TRIGGER_ATTR}] > *{display:none !important}
+[${MODEL_TRIGGER_ATTR}]::before{content:"";display:block;width:20px;height:20px;flex:none;background:currentColor;-webkit-mask:${MODEL_ICON_URL} center/20px 20px no-repeat;mask:${MODEL_ICON_URL} center/20px 20px no-repeat}
+`
+
+    /**
+     * The model seat is an official composer button. This layer only tags that
+     * button and hides its text through scoped CSS; removing the tag restores it.
+     */
+    function createComposerPolish() {
+      const doc = typeof document === 'undefined' ? null : document
+      let enabled = false
+      let observer = null
+      let frame = 0
+      let style = null
+
+      const raf = (fn) => {
+        if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+          return window.requestAnimationFrame(fn)
+        }
+        return typeof window !== 'undefined' ? window.setTimeout(fn, 16) : 0
+      }
+      const caf = (id) => {
+        if (!id) return
+        if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
+          window.cancelAnimationFrame(id)
+        } else if (typeof window !== 'undefined') {
+          window.clearTimeout(id)
+        }
+      }
+
+      function ensureStyle() {
+        if (!doc || !doc.head) return
+        if (style && style.isConnected) return
+        style = doc.createElement('style')
+        style.setAttribute(COMPOSER_STYLE_ATTR, '')
+        style.textContent = COMPOSER_CSS
+        doc.head.appendChild(style)
+      }
+
+      function findTriggers() {
+        if (!doc || typeof doc.querySelectorAll !== 'function') return []
+        const result = []
+        for (const card of doc.querySelectorAll('[data-composer-card]')) {
+          for (const button of card.querySelectorAll('button[aria-haspopup="menu"]')) {
+            if (button.querySelector('[data-provider-id][data-model-id]')) result.push(button)
+          }
+        }
+        return result
+      }
+
+      function sync() {
+        if (!enabled || !doc || typeof doc.querySelectorAll !== 'function') return
+        const next = new Set(findTriggers())
+        for (const node of doc.querySelectorAll('[' + MODEL_TRIGGER_ATTR + ']')) {
+          if (!next.has(node)) node.removeAttribute(MODEL_TRIGGER_ATTR)
+        }
+        for (const node of next) node.setAttribute(MODEL_TRIGGER_ATTR, 'on')
+      }
+
+      function schedule() {
+        if (!enabled || frame) return
+        frame = raf(() => {
+          frame = 0
+          sync()
+        })
+      }
+
+      function start() {
+        if (enabled || !doc) return
+        enabled = true
+        ensureStyle()
+        sync()
+        if (typeof MutationObserver !== 'undefined' && doc.documentElement) {
+          observer = new MutationObserver(schedule)
+          observer.observe(doc.documentElement, { childList: true, subtree: true })
+        }
+      }
+
+      function stop() {
+        enabled = false
+        caf(frame)
+        frame = 0
+        if (observer) {
+          observer.disconnect()
+          observer = null
+        }
+        if (doc && typeof doc.querySelectorAll === 'function') {
+          for (const node of doc.querySelectorAll('[' + MODEL_TRIGGER_ATTR + ']')) node.removeAttribute(MODEL_TRIGGER_ATTR)
+          for (const node of doc.querySelectorAll('style[' + COMPOSER_STYLE_ATTR + ']')) node.remove()
+        }
+        style = null
+      }
+
+      return {
+        setEnabled(value) {
+          if (value) start()
+          else stop()
+        },
+        dispose() {
+          stop()
+        },
+      }
+    }
+
     function Module(props) {
       const { id, icon, title, desc, open, enabled, onToggle, onEnabled, children } = props
       const hasBody = children !== void 0 && children !== null
@@ -4970,6 +5102,25 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
             : null,
         ),
         expanded ? h('div', { className: 'cfui-mod-body' }, children) : null,
+      )
+    }
+
+    function FeatureRow(props) {
+      const state = props.checked ? props.t('module.enabled') : props.t('module.disabled')
+      return h('div', { className: 'cfui-feature-row' },
+        h('span', { className: 'cfui-feature-name' }, props.title),
+        h('label', {
+          className: 'cfui-mod-switch cfui-feature-switch',
+          title: props.title + ' · ' + state,
+        },
+          h('input', {
+            type: 'checkbox',
+            checked: props.checked,
+            'aria-label': props.title + ' · ' + state,
+            onChange: (event) => props.onChange(event.target.checked),
+          }),
+          h('span', { className: 'cfui-switch-track', 'aria-hidden': 'true' }),
+        ),
       )
     }
 
@@ -5031,6 +5182,7 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
       const sidebarModule = createSidebarModule(require)
       const fontModule = createFontModule(require)
       const turnRail = createTurnRailPolish()
+      const composerPolish = createComposerPolish()
 
       const gates = { rail: [], sidebar: [] }
       let gating = false
@@ -5082,14 +5234,19 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
 
       function syncGates() {
         const state = readEnabledSnapshot()
-        syncGate('rail', state.rail !== false)
+        const otherOn = state.other !== false
+        syncGate('rail', otherOn && state.otherRail !== false)
         syncGate('sidebar', state.sidebar !== false)
-        turnRail.setEnabled(state.other !== false && state.otherAnchor !== false)
+        turnRail.setEnabled(otherOn && state.otherAnchor !== false)
+        composerPolish.setEnabled(otherOn && state.otherComposer !== false)
       }
 
       syncGates()
       ctx.effect(() => subscribeEnabled(syncGates), 'client-front-ui: module switches')
-      ctx.effect(() => () => turnRail.dispose(), 'client-front-ui: other UI cleanup')
+      ctx.effect(() => () => {
+        turnRail.dispose()
+        composerPolish.dispose()
+      }, 'client-front-ui: other UI cleanup')
 
       const FontPanel = fontModule.createPanel(ctx, fontT)
       const ResetAndDisable = fontModule.createResetAndDisable(ctx, fontT, PACKAGE)
@@ -5127,17 +5284,6 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
             h(SidebarSettings, { t: sidebarT }),
           )),
           h(Module, {
-            id: 'rail',
-            t,
-            icon: ICON_RAIL,
-            title: t('module.rail.title'),
-            desc: t('module.rail.desc'),
-            open: props.open.rail,
-            enabled: enabled.rail !== false,
-            onToggle: () => props.toggle('rail'),
-            onEnabled: (value) => setModuleEnabled('rail', value),
-          }),
-          h(Module, {
             id: 'other',
             t,
             icon: ICON_OTHER,
@@ -5151,20 +5297,25 @@ html[data-client-front-ui='on'] div:has(> [data-shell-overlay]) [data-slot='side
               h('span', null, t('settings.feature')),
               h('span', null, t('settings.state')),
             ),
-            h('div', { className: 'cfui-feature-row' },
-              h('span', { className: 'cfui-feature-name' }, t('other.anchor.title')),
-              h('label', {
-                className: 'cfui-mod-switch cfui-feature-switch',
-                title: t('other.anchor.title') + ' · ' + (enabled.otherAnchor !== false ? t('module.enabled') : t('module.disabled')),
-              },
-                h('input', {
-                  type: 'checkbox',
-                  checked: enabled.otherAnchor !== false,
-                  'aria-label': t('other.anchor.title') + ' · ' + (enabled.otherAnchor !== false ? t('module.enabled') : t('module.disabled')),
-                  onChange: (event) => setModuleEnabled('otherAnchor', event.target.checked),
-                }),
-                h('span', { className: 'cfui-switch-track', 'aria-hidden': 'true' }),
-              ),
+            h('div', { className: 'cfui-feature-list' },
+              h(FeatureRow, {
+                t,
+                title: t('module.rail.title'),
+                checked: enabled.otherRail !== false,
+                onChange: (value) => setModuleEnabled('otherRail', value),
+              }),
+              h(FeatureRow, {
+                t,
+                title: t('other.anchor.title'),
+                checked: enabled.otherAnchor !== false,
+                onChange: (value) => setModuleEnabled('otherAnchor', value),
+              }),
+              h(FeatureRow, {
+                t,
+                title: t('other.composer.title'),
+                checked: enabled.otherComposer !== false,
+                onChange: (value) => setModuleEnabled('otherComposer', value),
+              }),
             ),
           )),
         )
