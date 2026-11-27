@@ -1,25 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Client Front UI">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="36" height="36" role="img" aria-label="Client Front UI">
   <defs>
-    <linearGradient id="cfui-bg" x1="10" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#3E86FF"/>
+    <linearGradient id="cfui-window" x1="3" y1="5" x2="30" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4A8DFF"/>
       <stop offset="1" stop-color="#2357D9"/>
     </linearGradient>
+
+    <!-- Cut the pane and a separation ring around the sparkle out of the frame. -->
+    <mask id="cfui-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36">
+      <rect x="2.8" y="5.4" width="26.8" height="22" rx="4.6" fill="#FFFFFF"/>
+      <rect x="6.2" y="12.4" width="20" height="11.2" rx="1.9" fill="#000000"/>
+      <path d="M0-1C0.08-0.28 0.28-0.08 1 0C0.28 0.08 0.08 0.28 0 1C-0.08 0.28-0.28 0.08-1 0C-0.28-0.08-0.08-0.28 0-1Z"
+        transform="translate(29.3 28.4) scale(6.76)" fill="#000000"/>
+    </mask>
   </defs>
 
-  <rect x="3" y="3" width="58" height="58" rx="17" fill="url(#cfui-bg)"/>
+  <rect x="2.8" y="5.4" width="26.8" height="22" rx="4.6" fill="url(#cfui-window)" mask="url(#cfui-cutout)"/>
 
-  <!-- three sliders: fonts / session sidebar / icon rail -->
-  <g fill="none" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round">
-    <path d="M14 21h15"/>
-    <path d="M37 21h13"/>
-    <path d="M14 32h7"/>
-    <path d="M29 32h21"/>
-    <path d="M14 43h18"/>
-    <path d="M40 43h10"/>
-  </g>
-  <g fill="#FFFFFF">
-    <circle cx="33" cy="21" r="4.4"/>
-    <circle cx="25" cy="32" r="4.4"/>
-    <circle cx="36" cy="43" r="4.4"/>
-  </g>
+  <!-- One solid sparkle, sized for the 30–36 px plugin row instead of a hairline star. -->
+  <path d="M0-1C0.08-0.28 0.28-0.08 1 0C0.28 0.08 0.08 0.28 0 1C-0.08 0.28-0.28 0.08-1 0C-0.28-0.08-0.08-0.28 0-1Z"
+    transform="translate(29.3 28.4) scale(5.2)" fill="#FFB020"/>
 </svg>

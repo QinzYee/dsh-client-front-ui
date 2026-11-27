@@ -5,7 +5,7 @@ English | [中文](README.zh.md)
 **Client Front UI (客户端界面拓展)** — A DSH Web extension with three interface modules: Font Controller, Workspace Extended, and Other UI Enhancements.
 
 [![version](https://img.shields.io/badge/version-0.5.0-blue.svg)](#changelog)
-[![DSH](https://img.shields.io/badge/DSH-0.2.1--rc.2-green.svg)](#compatibility--architecture)
+[![DSH](https://img.shields.io/badge/DSH-0.2.2--rc.5-green.svg)](#compatibility--architecture)
 [![platform](https://img.shields.io/badge/platform-DSH%20Web-lightgrey.svg)](#compatibility--architecture)
 
 ## Overview
@@ -57,7 +57,8 @@ Outer-layer polish for the official DSH UI. It does not modify DSH components; d
 
 * **Plugin Rail**: moves Plugins, Scheduled tasks and every global panel registered on `sidebar.panellist` into a 40×40 vertical rail; hides the brand row, moves **New session** to the top and keeps the account entry at the foot. Styling is scoped under `html[data-client-front-ui='on']`.
 * **Turn navigation**: rail marks are equal length and colour at rest, with only the official active mark highlighted. On hover, the pointed mark grows and neighbouring marks fall off by distance in a bell-like curve, with a springy transition.
-* **Composer polish**: replaces the model selector's text with a compact brain-and-circuit icon, and adds two matching pickers before it. The **skill picker** (hammer) lists the session's skills and writes the official `/name ` invocation into the draft, so the Host loads that skill for the next message. The **MCP picker** (chain link) reads the MCP manager's live fleet, marks one server as the session focus, shows its connection/tool status and reconnects a failed server when picked. Both triggers stay icon-only at rest and show a small label plus dot while active. Disabling restores the original composer.
+* **Composer polish**: replaces the model selector's text with a compact 20px brain icon and adds two matching pickers before it. The **skill picker** (hammer) lists the session's skills and writes the official `/name ` invocation into the draft, so the Host loads that skill for the next message. The **MCP picker** (paperclip/link) reads the MCP manager first and fills in static `mcp-client` rows from the Loader as **Static**, marks one server as the session focus, shows its status/tool count and reconnects a failed server when picked. Both triggers stay icon-only at rest and show a small label plus dot while active. Disabling restores the original composer.
+* **Glass hover hints**: native `title` hints on plugin controls (model button, skill/MCP triggers, settings, font page and sidebar controls) use a translucent, blurred, rounded glass layer; native browser tooltip boxes no longer appear.
 * **Per-feature switches**: the module stays available while each of the three features can be toggled independently.
 * **Non-invasive**: features only tag official elements, add scoped styles or CSS variables and remove everything on disable; the official React components are untouched.
 
@@ -123,10 +124,10 @@ All plugin states are stored locally in your browser or within your active DSH p
 
 ## Compatibility & Architecture
 
-* **Compatibility**: Verified on DSH Web `0.2.1-rc.2` (`desktop` profile).
+* **Compatibility**: Verified on DSH Web `0.2.2-rc.5` (`desktop` profile).
 * **Peer Dependencies**: Relies on host-provided `@deepseek-ai/dsh-client-ui-theme`, `ui-layout`, and `ui-sidebar` client packages without bundling duplicates.
 * **Implementation Details**:
-  * Single bundle and single Loader entry (`client-front-ui`) applying `createFontModule`, `createSidebarModule` and `createRailModule`, plus a non-invasive turn-navigation polish layer.
+  * Single bundle and single Loader entry (`client-front-ui`) applying `createFontModule`, `createSidebarModule` and `createRailModule`, plus a non-invasive turn-navigation polish layer, composer pickers/icons and a global glass-hint layer.
   * Page-level slots (`main`, `sidebar.panellist`, `plugins.bundle.config`) and detail actions are registered only once.
   * Ships with a prebuilt `client.js` committed to the repository for direct Git and npm distribution.
 
@@ -136,7 +137,7 @@ All plugin states are stored locally in your browser or within your active DSH p
 * **Font Module Switch Behavior**: Turning off the Font Controller switch only hides its UI panel and does not reset fonts already saved in `ui-theme`. Use the module's reset buttons to revert fonts.
 * **Installed Font Detection**: Detection relies on canvas text-width heuristics; if a local font is registered under a different system name, it may be flagged as uninstalled even though it can still be selected.
 * **Host DOM Coupling**: Workspace overrides and rail styles depend on official slot anchors (`data-slot`) and shell overlay structures (`shell.overlay`). Future DSH UI updates may require selector adjustments.
-* **MCP picker scope**: It lists servers owned by the MCP manager. Static `@deepseek-ai/dsh-mcp-client` rows composed directly in `cordis.yml` are not exposed through the browser API, so they do not appear in the picker.
+* **MCP picker scope**: Lists servers owned by the MCP manager first, then fills in static `@deepseek-ai/dsh-mcp-client` rows from the Loader as **Static**. Static names are derived from the Loader entry id, are display/status-only and cannot be restarted; a custom entry name that differs from `serverName` may show a different label.
 * **Skill applies to the next message**: The picker inserts the official `/name` text; DSH loads that skill for the message being composed. Select it again from the picker to apply it to another message.
 * **Web-Only Scope**: Built exclusively for DSH Web; provides no CLI, TUI, or model-facing tools.
 
@@ -153,13 +154,15 @@ A: The official `sidebar.workspaces` slot is a single-occupant slot. Implementin
 
 ## Changelog
 
-### 0.5.0——2026-11-27 10:04
+### 0.5.0——2026-11-27 17:15
 
 * Moved **Plugin Rail** from a module into a feature under **Other UI Enhancements**.
-* Added **Composer polish**: the model selector shows a brain-and-circuit icon; its text is restored when disabled.
+* Added **Composer polish**: the model selector shows a compact 20px brain icon; its text is restored when disabled.
 * Added the **skill picker** to composer polish: hammer icon, searchable skill list, official `/name` invocation inserted into the draft, subtle active state.
-* Added the **MCP picker** to composer polish: chain-link icon, live MCP-manager server list with status dots and tool counts, per-session focus, reconnect on picking a failed server.
-* Matched the new icons to the model icon's 16px size and 1.7 stroke; removed the menu arrow from both triggers.
+* Added the **MCP picker** to composer polish: paperclip/link icon, live MCP-manager server list with status dots and tool counts, per-session focus, reconnect on picking a failed server.
+* Added a **static MCP fallback**: `mcp-client` rows from the Loader appear as **Static**, with manager-owned servers taking priority.
+* Switched the model, skill and MCP icons to the supplied 20px mask artwork; removed the menu arrow from both triggers.
+* Unified plugin-owned hover hints under a liquid-glass layer, including the model button; native browser tooltip boxes no longer appear.
 
 
 ### 0.4.0——2026-11-25 15:47
